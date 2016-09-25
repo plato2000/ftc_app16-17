@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.util.Range;
 /**
  * Created by Winston on 1/30/16.
  */
-@TeleOp(name="Falcon", group="Falcon")
-public class FalconTeleOp extends OpMode {
+@TeleOp(name="Falcon15", group="Falcon15")
+public class FalconTeleOp15 extends OpMode {
 
     /*
      * Note: the configuration of the servos is such that
@@ -67,7 +67,7 @@ public class FalconTeleOp extends OpMode {
     /**
      * Constructor
      */
-    public FalconTeleOp() {
+    public FalconTeleOp15() {
 
     }
 
