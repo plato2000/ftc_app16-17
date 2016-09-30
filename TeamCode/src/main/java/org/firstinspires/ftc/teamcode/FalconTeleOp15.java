@@ -146,6 +146,11 @@ public class FalconTeleOp15 extends OpMode {
         float right = throttle - direction;
         float left = throttle + direction;
 
+        if(gamepad1.left_trigger>0.5f){
+            right = -gamepad1.right_stick_y;
+            left = -gamepad1.left_stick_y;
+        }
+
         if(gamepad1.left_bumper){
             right *=0.2;
             left *=0.2;
