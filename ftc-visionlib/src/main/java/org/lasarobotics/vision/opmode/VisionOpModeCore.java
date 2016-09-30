@@ -253,7 +253,7 @@ abstract class VisionOpModeCore extends OpMode implements CameraBridgeViewBase.C
         if (!initialized) {
             return inputFrame.rgba();
         }
-
+        System.out.println("About to telem");
         telemetry.addData("Vision Status", "Ready!");
 
         fps.update();

@@ -9,8 +9,10 @@ import com.qualcomm.robotcore.util.Range;
 /**
  * Created by Winston on 1/30/16.
  */
-@TeleOp(name="Falcon15", group="Falcon15")
-public class FalconTeleOp15 extends OpMode {
+@TeleOp(name="DriveOnly", group="DriveOnly")
+public class DriveOnlyTeleop extends OpMode {
+
+    final static float PERCENT_POWER=0.20f;
 
     /*
      * Note: the configuration of the servos is such that
@@ -18,9 +20,6 @@ public class FalconTeleOp15 extends OpMode {
      * Also, as the dump servo approaches 0, the dump opens up (drops the game element).
      */
     // TETRIX VALUES.
-
-    final static float PERCENT_POWER = 0.20f;
-
     final static double ZIP_IN_R = 0.40;
     final static double ZIP_OUT_R = 0.90;
     final static double ZIP_IN_L = 0.15;
@@ -70,7 +69,7 @@ public class FalconTeleOp15 extends OpMode {
     /**
      * Constructor
      */
-    public FalconTeleOp15() {
+    public DriveOnlyTeleop() {
 
     }
 
@@ -99,27 +98,6 @@ public class FalconTeleOp15 extends OpMode {
 		 */
         motorRight = hardwareMap.dcMotor.get("right");
         motorLeft = hardwareMap.dcMotor.get("left");
-        ballCollect = hardwareMap.dcMotor.get("ballCollect");
-        extension = hardwareMap.dcMotor.get("extension");
-        motorRight.setDirection(DcMotor.Direction.REVERSE);
-
-        dumpLeft = hardwareMap.servo.get("dumpLeft");
-        dumpRight = hardwareMap.servo.get("dumpRight");
-        dumpFront = hardwareMap.servo.get("dumpFront");
-        zipR = hardwareMap.servo.get("zipR");
-        zipL = hardwareMap.servo.get("zipL");
-        climberArm = hardwareMap.servo.get("climber");
-
-        // assign the starting position of the wrist and dump
-
-        zipPosR = ZIP_IN_R;
-        zipPosL = ZIP_IN_L;
-        climberPos=CLIMBER_MIN_RANGE;
-        dumpLeftPos = DUMP_L_CLOSE;
-        dumpRightPos = DUMP_R_CLOSE;
-        dumpFrontPos = 0.5;
-
-        collectPower=COLLECT_MIN_RANGE;
     }
 
     /*
@@ -157,73 +135,9 @@ public class FalconTeleOp15 extends OpMode {
         left = PERCENT_POWER*Range.clip(left, -1, 1);
 
 
-        float extend = (float)(0.25*scaleInput(Range.clip(gamepad2.left_stick_y, -1, 1)));
-
-        // scale the joystick value to make it easier to control
-        // the robot more precisely at slower speeds.
-        right = (float)scaleInput(right);
-        left =  (float)scaleInput(left);
-
-        if (gamepad2.dpad_down) {
-            zipPosR = ZIP_IN_R;
-            zipPosL = ZIP_IN_L;
-        }else if(gamepad2.dpad_left){
-            zipPosL = ZIP_OUT_L;
-            zipPosR = ZIP_IN_R;
-        }else if(gamepad2.dpad_right){
-            zipPosR = ZIP_OUT_R;
-            zipPosL = ZIP_IN_L;
-        }
-
-        if (gamepad2.right_trigger>0.5) {
-            climberPos = 0.60;
-        }else if (gamepad2.left_trigger>0.5) {
-            climberPos = 0.40;
-        }else{
-            climberPos=0.5;
-        }
-
-
-        // update the position of the dump
-        if (gamepad2.b) {
-            dumpLeftPos = DUMP_L_LEFT;
-            dumpRightPos = DUMP_R_LEFT;
-        }else if (gamepad2.x) {
-            dumpLeftPos = DUMP_L_RIGHT;
-            dumpRightPos = DUMP_R_RIGHT;
-        }else{
-            dumpLeftPos = DUMP_L_CLOSE;
-            dumpRightPos = DUMP_R_CLOSE;
-        }
-
-        if (gamepad2.a) {
-            dumpFrontPos = 0.60;
-        }else if (gamepad2.y) {
-            dumpFrontPos = 0.40;
-        }else{
-            dumpFrontPos=0.5;
-        }
-        
-        if(gamepad1.left_trigger>0.2){
-            collectPower=-0.75*scaleInput(gamepad1.left_trigger);
-        }else if(gamepad1.right_trigger>0.2){
-            collectPower=0.75*scaleInput(gamepad1.right_trigger);
-        }else{
-            collectPower=0;
-        }
-
-        // write position values to the wrist and dump servo
-        zipR.setPosition(zipPosR);
-        zipL.setPosition(zipPosL);
-        climberArm.setPosition(climberPos);
-        dumpLeft.setPosition(dumpLeftPos);
-        dumpRight.setPosition(dumpRightPos);
-        dumpFront.setPosition(dumpFrontPos);
 
         motorRight.setPower(right);
         motorLeft.setPower(left);
-        extension.setPower(extend);
-        ballCollect.setPower(collectPower);
 
 
 
@@ -235,16 +149,8 @@ public class FalconTeleOp15 extends OpMode {
 		 */
         telemetry.addData("Text", "*** Robot Data***");
 
-        telemetry.addData("dumpLeft", "dumpL:  " + String.format("%.2f", dumpLeftPos));
-        telemetry.addData("dumpRight", "dumpR:  " + String.format("%.2f", dumpRightPos));
-        telemetry.addData("dumpFront", "dumpF:  " + String.format("%.2f", dumpFrontPos));
         telemetry.addData("left tgt pwr",  "left  pwr: " + String.format("%.2f", left));
         telemetry.addData("right tgt pwr", "right pwr: " + String.format("%.2f", right));
-        telemetry.addData("collector pwr", "collector pwr: " + String.format("%.2f", collectPower));
-        telemetry.addData("extension pwr", "extension pwr: " + String.format("%.2f", extend));
-        telemetry.addData("zipR", "zipR:  " + String.format("%.2f", zipPosR));
-        telemetry.addData("zipL", "zipL:  " + String.format("%.2f", zipPosL));
-        telemetry.addData("ClimbArm", "ClimbArm:  " + String.format("%.2f", climberPos));
 
     }
 
