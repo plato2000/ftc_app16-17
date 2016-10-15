@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.Range;
  * Created by Winston on 1/30/16.
  */
 @TeleOp(name="DriveOnly", group="DriveOnly")
-public class DriveOnlyTeleop extends OpMode {
+public class DriveOnlyTeleOp extends OpMode {
 
     final static float PERCENT_POWER=0.20f;
 
@@ -69,7 +69,7 @@ public class DriveOnlyTeleop extends OpMode {
     /**
      * Constructor
      */
-    public DriveOnlyTeleop() {
+    public DriveOnlyTeleOp() {
 
     }
 
