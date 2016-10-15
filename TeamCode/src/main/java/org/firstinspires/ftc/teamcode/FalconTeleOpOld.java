@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.util.Range;
 /**
  * Created by Winston on 1/30/16.
  */
-@TeleOp(name="Falcon15", group="Falcon15")
-public class FalconTeleOp15 extends OpMode {
+@TeleOp(name="FalconOld", group="FalconOld")
+public class FalconTeleOpOld extends OpMode {
 
     /*
      * Note: the configuration of the servos is such that
@@ -18,9 +18,6 @@ public class FalconTeleOp15 extends OpMode {
      * Also, as the dump servo approaches 0, the dump opens up (drops the game element).
      */
     // TETRIX VALUES.
-
-    final static float PERCENT_POWER = 0.20f;
-
     final static double ZIP_IN_R = 0.40;
     final static double ZIP_OUT_R = 0.90;
     final static double ZIP_IN_L = 0.15;
@@ -70,7 +67,7 @@ public class FalconTeleOp15 extends OpMode {
     /**
      * Constructor
      */
-    public FalconTeleOp15() {
+    public FalconTeleOpOld() {
 
     }
 
@@ -146,20 +143,14 @@ public class FalconTeleOp15 extends OpMode {
         float right = throttle - direction;
         float left = throttle + direction;
 
-        if(gamepad1.left_trigger>0.5f){
-            right = -gamepad1.right_stick_y;
-            left = -gamepad1.left_stick_y;
-        }
-
         if(gamepad1.left_bumper){
             right *=0.2;
             left *=0.2;
         }
 
         // clip the right/left values so that the values never exceed +/- 1
-        right = PERCENT_POWER*Range.clip(right, -1, 1);
-
-        left = PERCENT_POWER*Range.clip(left, -1, 1);
+        right = Range.clip(right, -1, 1);
+        left = Range.clip(left, -1, 1);
 
 
         float extend = (float)(0.25*scaleInput(Range.clip(gamepad2.left_stick_y, -1, 1)));
@@ -208,7 +199,7 @@ public class FalconTeleOp15 extends OpMode {
         }else{
             dumpFrontPos=0.5;
         }
-        
+
         if(gamepad1.left_trigger>0.2){
             collectPower=-0.75*scaleInput(gamepad1.left_trigger);
         }else if(gamepad1.right_trigger>0.2){
