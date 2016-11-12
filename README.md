@@ -1,4 +1,6 @@
 # ftc_app
+#Color Sensor Branch
+Useful Link: http://ftcforum.usfirst.org/archive/index.php/t-5422.html
 FTC Android Studio project to create FTC Robot Controller app.
 
 This is the FTC SDK that can be used to create an FTC Robot Controller app, with custom op modes.
