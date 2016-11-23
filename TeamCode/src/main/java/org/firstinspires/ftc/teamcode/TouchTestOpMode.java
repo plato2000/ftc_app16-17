@@ -2,22 +2,21 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 /**
  * Created by Winston on 11/12/16.
  */
 
-@TeleOp(name="ColorTest", group="ColorTest")
-public class ColorTestOpMode extends OpMode{
-    ColorSensor sensorColor;
+@TeleOp(name="TouchTest", group="TouchTest")
+public class TouchTestOpMode extends OpMode{
+    TouchSensor touchSense;
 
 
     @Override
     public void init() {
 
-        sensorColor = hardwareMap.colorSensor.get("colorADA");
+        touchSense = hardwareMap.touchSensor.get("touchSensor");
     }
 
 
@@ -39,17 +38,14 @@ public class ColorTestOpMode extends OpMode{
     @Override
     public void loop() {
 
-        int b1 = sensorColor.blue();
+        boolean b1 = touchSense.isPressed();
         try {
             Thread.sleep(18);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        int b2 = sensorColor.blue();
 
-        telemetry.addData("blue1",b1 );
-        telemetry.addData("blue2", b2);
-        telemetry.addData("equal?", b1==b2);
+        telemetry.addData("touchLevel ",b1 );
 
     }
 
@@ -61,7 +57,7 @@ public class ColorTestOpMode extends OpMode{
     public void stop() {
 
     }
-    public ColorTestOpMode(){
+    public TouchTestOpMode(){
 
     }
 
