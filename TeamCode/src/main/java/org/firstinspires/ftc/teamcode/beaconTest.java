@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -21,28 +22,32 @@ import org.lasarobotics.vision.ftc.resq.Beacon;
 import org.opencv.core.Size;
 
 /**
- * Created by Winston on 11/23/16.
+ * Created by Sreya Vangara on 11/26/2016.
  */
-
-@Autonomous(name = "AutoRed", group = "AutoRed")
-public class autoRed extends LinearVisionOpMode{
-
+@TeleOp(name = "beaconTest", group = "AutoRed")
+public class beaconTest extends LinearVisionOpMode {
     final static float PERCENT_MAX_POWER = 0.20f;
 
     final static int thresh=75;
 
-    DcMotor motorRight;
-    DcMotor motorLeft;
+    final static double OneWay = 0.0;
 
-    ColorSensor scolF;
-    ColorSensor scolB;
+    final static double OtherWay = 1.0;
+
+    Servo zipL;
+
+    //DcMotor motorRight;
+    //DcMotor motorLeft;
+
+    //ensor scolF;
+    //ColorSensor scolB;
     UltrasonicSensor dist;
 
-    public autoRed(){
-
+    public beaconTest(){
+        zipL = hardwareMap.servo.get("zipL");
     }
 
-    public void runOpMode() throws InterruptedException{
+    public void runOpMode() throws InterruptedException {
         waitForVisionStart();
 
         /**
@@ -80,12 +85,12 @@ public class autoRed extends LinearVisionOpMode{
         beacon.setColorToleranceRed(0);
         beacon.setColorToleranceBlue(0);
 
-        motorRight = hardwareMap.dcMotor.get("right");
-        motorLeft = hardwareMap.dcMotor.get("left");
-        scolF = hardwareMap.colorSensor.get("colorSenseF");
-        scolB = hardwareMap.colorSensor.get("colorSenseB");
-        dist = hardwareMap.ultrasonicSensor.get("ultrasonicSensor") ;
-        motorRight.setDirection(DcMotor.Direction.REVERSE);
+        //motorRight = hardwareMap.dcMotor.get("right");
+        //motorLeft = hardwareMap.dcMotor.get("left");
+        //scolF = hardwareMap.colorSensor.get("colorSenseF");
+        //scolB = hardwareMap.colorSensor.get("colorSenseB");
+        //dist = hardwareMap.ultrasonicSensor.get("ultrasonicSensor");
+        //motorRight.setDirection(DcMotor.Direction.REVERSE);
         rotation.setIsUsingSecondaryCamera(false);
         rotation.disableAutoRotate();
         rotation.setActivityOrientationFixed(ScreenOrientation.LANDSCAPE);
@@ -94,53 +99,44 @@ public class autoRed extends LinearVisionOpMode{
 
         waitForStart();
 
-        float speedStart=1;
-        motorLeft.setPower(PERCENT_MAX_POWER*speedStart);
-        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
-
-        while(colSumF()<thresh){
-        }
-
-        motorLeft.setPower(0);
-        while(colSumF()<thresh){
-        }
-
         Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
 
-        boolean t = true;
+        analyz.getLeftButton();
 
-
-        while(t){
-            if(colSumF()<thresh){
-                if(colSumB()<thresh){
-                    motorRight.setPower(0);
-                }else{
-                    motorLeft.setPower(0);
-                }
-            }else{
-                motorLeft.setPower(PERCENT_MAX_POWER*speedStart);
-                motorRight.setPower(PERCENT_MAX_POWER * speedStart);
-            }
+        int i=1;
+        while (i<200){
+            //Thread.sleep(100);
             analyz = beacon.getAnalysis();
-            if (analyz.isBeaconFound() ){
-                if (analyz.isRightRed()) {
+            //telemetry.addData("hi", "Sreya");
 
-                } else {
+            boolean b = analyz.isBeaconFound();
+            //telemetry.addData("beac found", b);
+
+            if (b) {
+
+                System.out.println("hey its right here");
+                System.out.println(analyz.getLeftButton());
+                //System.out.println(analyz.getLeftButton().center());
+                //System.out.println(analyz.getLeftButton().center().x);
+
+                try {
+                    double x = analyz.getLeftButton().center().x;
+                    //telemetry.addData("leftButtonY", analyz.getLeftButton().center().y);
+                    //telemetry.addData("rightButtonX", analyz.getRightButton().center().x);
+                    //telemetry.addData("rightButtonY", analyz.getRightButton().center().y);
+
+                    if (x < 250) {
+                        zipL.setPosition(0.5);
+                    } else {
+                        zipL.setPosition(OneWay);
+                    }
+                } catch (NullPointerException e) {
 
                 }
+
             }
+        i++;
         }
-        //motorLeft.setPower(0);
-        //motorRight.setPower(0);
-
     }
-
-    public int colSumF(){
-        return scolF.blue() + scolF.red() + scolF.green();
-    }
-
-    public int colSumB(){
-        return scolB.blue() + scolB.red() + scolB.green();
-    }
-
 }
+
