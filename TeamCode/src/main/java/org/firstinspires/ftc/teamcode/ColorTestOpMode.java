@@ -11,13 +11,13 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 
 @TeleOp(name="ColorTest", group="ColorTest")
 public class ColorTestOpMode extends OpMode{
-    ColorSensor sensorColor;
+    ColorSensor colorSense;
 
 
     @Override
     public void init() {
 
-        sensorColor = hardwareMap.colorSensor.get("colorADA");
+        colorSense = hardwareMap.colorSensor.get("colorF");
     }
 
 
@@ -39,17 +39,9 @@ public class ColorTestOpMode extends OpMode{
     @Override
     public void loop() {
 
-        int b1 = sensorColor.blue();
-        try {
-            Thread.sleep(18);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        int b2 = sensorColor.blue();
+        int b1 = colorSense.blue()+colorSense.green()+colorSense.red();
 
-        telemetry.addData("blue1",b1 );
-        telemetry.addData("blue2", b2);
-        telemetry.addData("equal?", b1==b2);
+        telemetry.addData("totcol ",b1 );
 
     }
 

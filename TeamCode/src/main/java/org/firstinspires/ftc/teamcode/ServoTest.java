@@ -22,7 +22,7 @@ public class ServoTest extends OpMode {
     
 
     public void init() {
-        zipL = hardwareMap.servo.get("zipL");         // assign the starting position of the wrist and dump
+        zipL = hardwareMap.servo.get("slider");         // assign the starting position of the wrist and dump
         zipPosL = ZIP_IN_L;
     }
 
@@ -37,6 +37,6 @@ public class ServoTest extends OpMode {
             zipPosL = ZIP_IN_L;
         }
         zipL.setPosition(zipPosL);
-        telemetry.addData("zipL", "zipL:  " + String.format("%.2f", zipPosL));
+        telemetry.addData("slider", "slider:  " + String.format("%.2f", zipPosL));
     }
 }

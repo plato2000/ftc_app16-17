@@ -1,16 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
-
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.lasarobotics.vision.android.Cameras;
 import org.lasarobotics.vision.ftc.resq.Beacon;
@@ -18,7 +10,6 @@ import org.lasarobotics.vision.opmode.LinearVisionOpMode;
 import org.lasarobotics.vision.opmode.VisionOpMode;
 import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
 import org.lasarobotics.vision.util.ScreenOrientation;
-import org.lasarobotics.vision.ftc.resq.Beacon;
 import org.opencv.core.Size;
 
 /**
@@ -28,26 +19,30 @@ import org.opencv.core.Size;
 public class beaconTest extends LinearVisionOpMode {
     final static float PERCENT_MAX_POWER = 0.20f;
 
+    final static float STEERING_FIX = 0.78f;
+
     final static int thresh=75;
 
-    final static double OneWay = 0.0;
+    final static double Go_Left = 0.1;
 
-    final static double OtherWay = 1.0;
+    final static double Go_Right = 0.9;
 
-    Servo zipL;
+
+    Servo slider;
 
     //DcMotor motorRight;
     //DcMotor motorLeft;
 
     //ensor scolF;
     //ColorSensor scolB;
-    UltrasonicSensor dist;
+    //UltrasonicSensor dist;
 
     public beaconTest(){
-        zipL = hardwareMap.servo.get("zipL");
+
     }
 
     public void runOpMode() throws InterruptedException {
+        slider = hardwareMap.servo.get("slider");
         waitForVisionStart();
 
         /**
@@ -107,35 +102,38 @@ public class beaconTest extends LinearVisionOpMode {
         while (i<200){
             //Thread.sleep(100);
             analyz = beacon.getAnalysis();
-            //telemetry.addData("hi", "Sreya");
 
             boolean b = analyz.isBeaconFound();
-            //telemetry.addData("beac found", b);
+            telemetry.addData("beac found", b);
 
             if (b) {
 
-                System.out.println("hey its right here");
-                System.out.println(analyz.getLeftButton());
+                //System.out.println("hey its right here");
+                //System.out.println(analyz.getLeftButton());
                 //System.out.println(analyz.getLeftButton().center());
                 //System.out.println(analyz.getLeftButton().center().x);
 
                 try {
                     double x = analyz.getLeftButton().center().x;
-                    //telemetry.addData("leftButtonY", analyz.getLeftButton().center().y);
-                    //telemetry.addData("rightButtonX", analyz.getRightButton().center().x);
-                    //telemetry.addData("rightButtonY", analyz.getRightButton().center().y);
+                    telemetry.addData("leftButtonX", analyz.getLeftButton().center().x);
 
-                    if (x < 250) {
-                        zipL.setPosition(0.5);
+                    if (x < 50) {
+                        telemetry.addData("stopping", "stopping");
+                        System.out.println("stopping "+x);
+                        slider.setPosition(0.5);
                     } else {
-                        zipL.setPosition(OneWay);
+                        telemetry.addData("goleft", "goleft");
+                        System.out.println("goleft "+x);
+                        slider.setPosition(Go_Left);
                     }
                 } catch (NullPointerException e) {
 
                 }
 
+            }else{
+
+                slider.setPosition(0.5);
             }
-        i++;
         }
     }
 }

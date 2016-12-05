@@ -104,7 +104,7 @@ public class FalconTeleOpOld extends OpMode {
         dumpRight = hardwareMap.servo.get("dumpRight");
         dumpFront = hardwareMap.servo.get("dumpFront");
         zipR = hardwareMap.servo.get("zipR");
-        zipL = hardwareMap.servo.get("zipL");
+        zipL = hardwareMap.servo.get("slider");
         climberArm = hardwareMap.servo.get("climber");
 
         // assign the starting position of the wrist and dump
@@ -239,7 +239,7 @@ public class FalconTeleOpOld extends OpMode {
         telemetry.addData("collector pwr", "collector pwr: " + String.format("%.2f", collectPower));
         telemetry.addData("extension pwr", "extension pwr: " + String.format("%.2f", extend));
         telemetry.addData("zipR", "zipR:  " + String.format("%.2f", zipPosR));
-        telemetry.addData("zipL", "zipL:  " + String.format("%.2f", zipPosL));
+        telemetry.addData("slider", "slider:  " + String.format("%.2f", zipPosL));
         telemetry.addData("ClimbArm", "ClimbArm:  " + String.format("%.2f", climberPos));
 
     }

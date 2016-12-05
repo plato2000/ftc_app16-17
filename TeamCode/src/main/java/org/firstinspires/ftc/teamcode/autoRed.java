@@ -29,14 +29,16 @@ public class autoRed extends LinearVisionOpMode{
 
     final static float PERCENT_MAX_POWER = 0.20f;
 
-    final static int thresh=75;
+    final static float STEERING_FIX = 0.75f;
+
+    final static int thresh=300;
 
     DcMotor motorRight;
     DcMotor motorLeft;
 
     ColorSensor scolF;
     ColorSensor scolB;
-    UltrasonicSensor dist;
+    //UltrasonicSensor dist;
 
     public autoRed(){
 
@@ -82,10 +84,9 @@ public class autoRed extends LinearVisionOpMode{
 
         motorRight = hardwareMap.dcMotor.get("right");
         motorLeft = hardwareMap.dcMotor.get("left");
-        scolF = hardwareMap.colorSensor.get("colorSenseF");
-        scolB = hardwareMap.colorSensor.get("colorSenseB");
-        dist = hardwareMap.ultrasonicSensor.get("ultrasonicSensor") ;
-        motorRight.setDirection(DcMotor.Direction.REVERSE);
+        scolF = hardwareMap.colorSensor.get("colorF");
+        scolB = hardwareMap.colorSensor.get("colorB");
+        motorLeft.setDirection(DcMotor.Direction.REVERSE);
         rotation.setIsUsingSecondaryCamera(false);
         rotation.disableAutoRotate();
         rotation.setActivityOrientationFixed(ScreenOrientation.LANDSCAPE);
@@ -96,13 +97,14 @@ public class autoRed extends LinearVisionOpMode{
 
         float speedStart=1;
         motorLeft.setPower(PERCENT_MAX_POWER*speedStart);
-        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+        motorRight.setPower(PERCENT_MAX_POWER * speedStart*STEERING_FIX);
 
-        while(colSumF()<thresh){
+        while(colSumF()>thresh){
         }
 
         motorLeft.setPower(0);
-        while(colSumF()<thresh){
+
+        while(colSumB()>thresh){
         }
 
         Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
@@ -111,17 +113,17 @@ public class autoRed extends LinearVisionOpMode{
 
 
         while(t){
-            if(colSumF()<thresh){
-                if(colSumB()<thresh){
+            if(colSumF()>thresh){
+                if(colSumB()>thresh){
                     motorRight.setPower(0);
                 }else{
                     motorLeft.setPower(0);
                 }
             }else{
                 motorLeft.setPower(PERCENT_MAX_POWER*speedStart);
-                motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+                motorRight.setPower(PERCENT_MAX_POWER * speedStart*STEERING_FIX);
             }
-            analyz = beacon.getAnalysis();
+            //analyz = beacon.getAnalysis();
             if (analyz.isBeaconFound() ){
                 if (analyz.isRightRed()) {
 
@@ -133,14 +135,19 @@ public class autoRed extends LinearVisionOpMode{
         //motorLeft.setPower(0);
         //motorRight.setPower(0);
 
+
     }
 
     public int colSumF(){
-        return scolF.blue() + scolF.red() + scolF.green();
+        int colTot=scolF.blue() + scolF.red() + scolF.green();
+        telemetry.addData("colF",colTot);
+        return colTot;
     }
 
     public int colSumB(){
-        return scolB.blue() + scolB.red() + scolB.green();
+        int colTot=scolB.blue() + scolB.red() + scolB.green();
+        telemetry.addData("colB",colTot);
+        return colTot;
     }
 
 }
