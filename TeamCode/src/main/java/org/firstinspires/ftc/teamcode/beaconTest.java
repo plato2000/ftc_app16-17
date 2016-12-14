@@ -20,6 +20,8 @@ public class beaconTest extends LinearVisionOpMode {
     final static float PERCENT_MAX_POWER = 0.20f;
 
     final static float STEERING_FIX = 0.78f;
+    final static int MIN_POS = 50;
+    final static int MAX_POS = 100;
 
     final static int thresh=75;
 
@@ -99,12 +101,11 @@ public class beaconTest extends LinearVisionOpMode {
         analyz.getLeftButton();
 
         int i=1;
-        while (i<200){
+        while (10<200){
             //Thread.sleep(100);
             analyz = beacon.getAnalysis();
 
             boolean b = analyz.isBeaconFound();
-            telemetry.addData("beac found", b);
 
             if (b) {
 
@@ -114,17 +115,21 @@ public class beaconTest extends LinearVisionOpMode {
                 //System.out.println(analyz.getLeftButton().center().x);
 
                 try {
-                    double x = analyz.getLeftButton().center().x;
-                    telemetry.addData("leftButtonX", analyz.getLeftButton().center().x);
+                    double x = analyz.getCenter().x;
+                    telemetry.addData("centerX", analyz.getLeftButton().center().x);
 
-                    if (x < 50) {
-                        telemetry.addData("stopping", "stopping");
-                        System.out.println("stopping "+x);
-                        slider.setPosition(0.5);
-                    } else {
+                    if (x > MAX_POS) {
                         telemetry.addData("goleft", "goleft");
                         System.out.println("goleft "+x);
                         slider.setPosition(Go_Left);
+                    } else if(x < MIN_POS) {
+                        telemetry.addData("goright", "goright");
+                        System.out.println("goright "+x);
+                        slider.setPosition(Go_Right);
+                    }else {
+                        telemetry.addData("stopping", "stopping");
+                        System.out.println("stopping "+x);
+                        slider.setPosition(0.5);
                     }
                 } catch (NullPointerException e) {
 
