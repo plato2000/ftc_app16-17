@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.lasarobotics.vision.android.Cameras;
 import org.lasarobotics.vision.ftc.resq.Beacon;
 import org.lasarobotics.vision.opmode.LinearVisionOpMode;
-import org.lasarobotics.vision.opmode.VisionOpMode;
 import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
 import org.lasarobotics.vision.util.ScreenOrientation;
 import org.opencv.core.Size;
@@ -15,8 +13,8 @@ import org.opencv.core.Size;
 /**
  * Created by Sreya Vangara on 11/26/2016.
  */
-@TeleOp(name = "beaconTest", group = "AutoRed")
-public class beaconTest extends LinearVisionOpMode {
+@TeleOp(name = "hardCodeTest", group = "hardCodeTest")
+public class hardCodeTest extends LinearVisionOpMode {
     final static float PERCENT_MAX_POWER = 0.20f;
 
     final static int MIN_POS = 250;
@@ -26,6 +24,8 @@ public class beaconTest extends LinearVisionOpMode {
     final static double Go_Left = 0.1;
 
     final static double Go_Right = 0.9;
+
+    final static long slideTime = 750;
 
 
     Servo slider;
@@ -37,7 +37,7 @@ public class beaconTest extends LinearVisionOpMode {
     //ColorSensor scolB;
     //UltrasonicSensor dist;
 
-    public beaconTest(){
+    public hardCodeTest(){
 
     }
 
@@ -63,9 +63,9 @@ public class beaconTest extends LinearVisionOpMode {
          * Enable extensions. Use what you need.
          * If you turn on the BEACON extension, it's best to turn on ROTATION too.
          */
-        enableExtension(VisionOpMode.Extensions.BEACON);         //Beacon detection
-        enableExtension(VisionOpMode.Extensions.ROTATION);       //Automatic screen rotation correction
-        enableExtension(VisionOpMode.Extensions.CAMERA_CONTROL); //Manual camera control
+        enableExtension(Extensions.BEACON);         //Beacon detection
+        enableExtension(Extensions.ROTATION);       //Automatic screen rotation correction
+        enableExtension(Extensions.CAMERA_CONTROL); //Manual camera control
 
         /**
          * Set the beacon analysis method
@@ -96,48 +96,45 @@ public class beaconTest extends LinearVisionOpMode {
 
         Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
 
-        analyz.getLeftButton();
 
-        int i=1;
-        while (10<200){
+        boolean b = analyz.isBeaconFound();
+        while (!b){
             //Thread.sleep(100);
             analyz = beacon.getAnalysis();
 
-            boolean b = analyz.isBeaconFound();
-
-            if (b) {
-
-                //System.out.println("hey its right here");
-                //System.out.println(analyz.getLeftButton());
-                //System.out.println(analyz.getLeftButton().center());
-                //System.out.println(analyz.getLeftButton().center().x);
-
-                try {
-                    double x = analyz.getCenter().x;
-                    telemetry.addData("centerX", analyz.getLeftButton().center().x);
-
-                    if (x > MAX_POS) {
-                        telemetry.addData("goleft", "goleft");
-                        System.out.println("goleft "+x);
-                        slider.setPosition(Go_Left);
-                    } else if(x < MIN_POS) {
-                        telemetry.addData("goright", "goright");
-                        System.out.println("goright "+x);
-                        slider.setPosition(Go_Right);
-                    }else {
-                        telemetry.addData("stopping", "stopping");
-                        System.out.println("stopping "+x);
-                        slider.setPosition(0.5);
-                    }
-                } catch (NullPointerException e) {
-
-                }
-
-            }else{
-
-                slider.setPosition(0.5);
-            }
+            b = analyz.isBeaconFound();
         }
+
+        analyz = beacon.getAnalysis();
+
+        int left=0;
+        int right=0;
+        while(true){
+            left=0;
+            right=0;
+            for(int i=0; i<90;i++){
+                analyz = beacon.getAnalysis();
+                if(analyz.isLeftRed()){
+                    left++;
+                }else{
+                    right++;
+                }
+                Thread.sleep(10);
+            }
+
+            telemetry.addData("left: ",left);
+            telemetry.addData("right: ",right);
+        }
+
+        /*if(analyz.isLeftRed()){
+            slider.setPosition(Go_Left);
+            Thread.sleep(slideTime);
+            slider.setPosition(0.5);
+        }else{
+            slider.setPosition(Go_Right);
+            Thread.sleep(slideTime);
+            slider.setPosition(0.5);
+        }*/
     }
 }
 

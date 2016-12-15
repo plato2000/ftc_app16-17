@@ -29,7 +29,7 @@ public class autoRed extends LinearVisionOpMode{
 
     final static float PERCENT_MAX_POWER = 0.20f;
 
-    final static float STEERING_FIX = 0.75f;
+    final static float LEFT_FIX = 0.90f;
 
     final static int thresh=300;
 
@@ -96,8 +96,8 @@ public class autoRed extends LinearVisionOpMode{
         waitForStart();
 
         float speedStart=1;
-        motorLeft.setPower(PERCENT_MAX_POWER*speedStart);
-        motorRight.setPower(PERCENT_MAX_POWER * speedStart*STEERING_FIX);
+        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
 
         while(colSumF()>thresh){
         }
@@ -120,8 +120,8 @@ public class autoRed extends LinearVisionOpMode{
                     motorLeft.setPower(0);
                 }
             }else{
-                motorLeft.setPower(PERCENT_MAX_POWER*speedStart);
-                motorRight.setPower(PERCENT_MAX_POWER * speedStart*STEERING_FIX);
+                motorLeft.setPower(PERCENT_MAX_POWER*speedStart*LEFT_FIX);
+                motorRight.setPower(PERCENT_MAX_POWER * speedStart);
             }
             //analyz = beacon.getAnalysis();
             if (analyz.isBeaconFound() ){

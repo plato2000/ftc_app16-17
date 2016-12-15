@@ -21,6 +21,7 @@ public class FalconTeleOpNew extends OpMode {
 
     final static float PERCENT_POWER = 0.20f;
 
+    final static float LEFT_FIX = 0.90f;
 
     DcMotor motorRight;
     DcMotor motorLeft;
@@ -57,7 +58,7 @@ public class FalconTeleOpNew extends OpMode {
 		 */
         motorRight = hardwareMap.dcMotor.get("right");
         motorLeft = hardwareMap.dcMotor.get("left");
-        motorRight.setDirection(DcMotor.Direction.REVERSE);
+        motorLeft.setDirection(DcMotor.Direction.REVERSE);
     }
 
     /*
@@ -88,25 +89,20 @@ public class FalconTeleOpNew extends OpMode {
             right = -gamepad1.right_stick_y;
             left = -gamepad1.left_stick_y;
         }
+        // clip the right/left values so that the values never exceed +/- 1
+        right = Range.clip(right, -1, 1);
+
+        left = Range.clip(left, -1, 1);
+
+        // scale the joystick value to make it easier to control
+        // the robot more precisely at slower speeds.
+        right = (float)scaleInput(right) * PERCENT_POWER;
+        left =  (float)scaleInput(left)  * PERCENT_POWER * LEFT_FIX;
 
         if(gamepad1.left_bumper){
             right *=0.2;
             left *=0.2;
         }
-
-        // clip the right/left values so that the values never exceed +/- 1
-        right = PERCENT_POWER*Range.clip(right, -1, 1);
-
-        left = PERCENT_POWER*Range.clip(left, -1, 1);
-
-
-        float extend = (float)(0.25*scaleInput(Range.clip(gamepad2.left_stick_y, -1, 1)));
-
-        // scale the joystick value to make it easier to control
-        // the robot more precisely at slower speeds.
-        right = (float)scaleInput(right);
-        left =  (float)scaleInput(left);
-
 
         motorRight.setPower(right);
         motorLeft.setPower(left);

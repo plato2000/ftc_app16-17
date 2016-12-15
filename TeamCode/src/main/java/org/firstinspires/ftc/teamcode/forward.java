@@ -13,8 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 public class forward extends LinearOpMode{
 
     final static float PERCENT_MAX_POWER = 0.20f;
-    final static float STEERING_FIX = 1f;
-
+    final static float LEFT_FIX = 0.90f;
     DcMotor motorRight;
     DcMotor motorLeft;
 
@@ -33,7 +32,7 @@ public class forward extends LinearOpMode{
 
         float speedStart=1;
         motorRight.setPower(PERCENT_MAX_POWER*speedStart);
-        motorLeft.setPower(PERCENT_MAX_POWER * speedStart);
+        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
 
         Thread.sleep(2000);
 
