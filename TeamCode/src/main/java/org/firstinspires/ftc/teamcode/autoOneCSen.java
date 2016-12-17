@@ -1,35 +1,23 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.content.SyncStatusObserver;
-
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
-
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.lasarobotics.vision.android.Cameras;
 import org.lasarobotics.vision.ftc.resq.Beacon;
 import org.lasarobotics.vision.opmode.LinearVisionOpMode;
-import org.lasarobotics.vision.opmode.VisionOpMode;
 import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
 import org.lasarobotics.vision.util.ScreenOrientation;
-import org.lasarobotics.vision.ftc.resq.Beacon;
 import org.opencv.core.Size;
-
-import java.util.Timer;
 
 /**
  * Created by Winston on 11/23/16.
  */
 
-@Autonomous(name = "AutoBlue", group = "AutoBlue")
-public class autoBlue extends LinearVisionOpMode{
+@Autonomous(name = "AutoOneCSen", group = "AutoOneCSen")
+public class autoOneCSen extends LinearVisionOpMode{
 
     final static float PERCENT_MAX_POWER = 0.20f;
 
@@ -56,7 +44,7 @@ public class autoBlue extends LinearVisionOpMode{
 
     Servo slider;
 
-    public autoBlue(){
+    public autoOneCSen(){
 
     }
 
@@ -82,9 +70,9 @@ public class autoBlue extends LinearVisionOpMode{
          * Enable extensions. Use what you need.
          * If you turn on the BEACON extension, it's best to turn on ROTATION too.
          */
-        enableExtension(VisionOpMode.Extensions.BEACON);         //Beacon detection
-        enableExtension(VisionOpMode.Extensions.ROTATION);       //Automatic screen rotation correction
-        enableExtension(VisionOpMode.Extensions.CAMERA_CONTROL); //Manual camera control
+        enableExtension(Extensions.BEACON);         //Beacon detection
+        enableExtension(Extensions.ROTATION);       //Automatic screen rotation correction
+        enableExtension(Extensions.CAMERA_CONTROL); //Manual camera control
 
         /**
          * Set the beacon analysis method
@@ -125,79 +113,44 @@ public class autoBlue extends LinearVisionOpMode{
         while(colSumF()<thresh){
         }
 
-        motorRight.setPower(0);
-
-        while(colSumB()<thresh){
+        while (colSumF()>thresh) {
         }
 
-        Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
+        motorRight.setPower(0);
+        while (colSumF()<thresh){
 
-        int left=0;
-        int right=0;
-        int count=0;
-        boolean hasMoved =false;
-        boolean hitWhite = true;
-        boolean measure = false;
-        boolean measure2 = false;
-        long startTime = 0;
-        long currTime = 0;
-        while(startTime==0 || currTime-startTime<7000){//for(int i=0;i<100000;i++){
-            if(colSumF()<thresh){
-                if(colSumB()<thresh){
-                    if(!hitWhite) {
-                        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-                        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
-                    }else{
-                        motorLeft.setPower(PERCENT_MAX_POWER*speedStart*LEFT_FIX);
-                        motorRight.setPower(0);
-                    }
-                }else{
-                    motorLeft.setPower(PERCENT_MAX_POWER*speedStart*LEFT_FIX);
-                    motorRight.setPower(0);
-                    hitWhite=true;
-                }
-            }else{
-                motorLeft.setPower(0);
-                motorRight.setPower(PERCENT_MAX_POWER * speedStart);
-                hitWhite=true;
-                measure = true;
-            }
-            analyz = beacon.getAnalysis();
-            if(analyz.isBeaconFound() && !hasMoved && measure){
-                count++;
-                if(analyz.isLeftBlue()){
-                    left++;
-                }else {
-                    right++;
-                }
-
-                telemetry.addData("left: ",left);
-                telemetry.addData("right: ", right);
-                System.out.println("left data " +left);
-                System.out.println("right data " +right);
-                if(count==samples){
-                    motorLeft.setPower(0);
-                    motorRight.setPower(0);
-                    if(right-left<threshLR){
-                        slider.setPosition(Go_Left);
-                        Thread.sleep(slideTime);
-                        slider.setPosition(0.5);
-                    }else{
-                        slider.setPosition(Go_Right);
-                        Thread.sleep(slideTime);
-                        slider.setPosition(0.5);
-                    }
-                    hasMoved=true;
-                    startTime = System.currentTimeMillis();
-
-                }
-            }
-            Thread.sleep(1);
-            currTime = System.currentTimeMillis();
         }
         motorLeft.setPower(0);
+        Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
+        int count=0;
+        int left =0;
+        int right=0;
+        for (int i=0; i<100; i++) {
+            analyz = beacon.getAnalysis();
+            count++;
+            if (analyz.isLeftBlue()) {
+                left++;
+            } else {
+                right++;
+            }
+        }
+        long startTime = 0;
+        long currTime = 0;
+
+        if(right-left<threshLR){
+            slider.setPosition(Go_Left);
+            Thread.sleep(slideTime);
+            slider.setPosition(0.5);
+        }else{
+            slider.setPosition(Go_Right);
+            Thread.sleep(slideTime);
+            slider.setPosition(0.5);
+        }
+        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+        Thread.sleep(6000);
+        motorLeft.setPower(0);
         motorRight.setPower(0);
-        Thread.sleep(1000);
         if(right-left>threshLR){
             slider.setPosition(Go_Left);
             Thread.sleep(slideTime);
@@ -207,6 +160,10 @@ public class autoBlue extends LinearVisionOpMode{
             Thread.sleep(slideTime);
             slider.setPosition(0.5);
         }
+
+
+
+
 
         /* //For the second beacon
         motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);

@@ -1,35 +1,23 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.content.SyncStatusObserver;
-
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
-
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.lasarobotics.vision.android.Cameras;
 import org.lasarobotics.vision.ftc.resq.Beacon;
 import org.lasarobotics.vision.opmode.LinearVisionOpMode;
-import org.lasarobotics.vision.opmode.VisionOpMode;
 import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
 import org.lasarobotics.vision.util.ScreenOrientation;
-import org.lasarobotics.vision.ftc.resq.Beacon;
 import org.opencv.core.Size;
-
-import java.util.Timer;
 
 /**
  * Created by Winston on 11/23/16.
  */
 
-@Autonomous(name = "AutoBlue", group = "AutoBlue")
-public class autoBlue extends LinearVisionOpMode{
+@Autonomous(name = "AutoRed", group = "AutoRed")
+public class autoRed extends LinearVisionOpMode{
 
     final static float PERCENT_MAX_POWER = 0.20f;
 
@@ -56,7 +44,7 @@ public class autoBlue extends LinearVisionOpMode{
 
     Servo slider;
 
-    public autoBlue(){
+    public autoRed(){
 
     }
 
@@ -82,9 +70,9 @@ public class autoBlue extends LinearVisionOpMode{
          * Enable extensions. Use what you need.
          * If you turn on the BEACON extension, it's best to turn on ROTATION too.
          */
-        enableExtension(VisionOpMode.Extensions.BEACON);         //Beacon detection
-        enableExtension(VisionOpMode.Extensions.ROTATION);       //Automatic screen rotation correction
-        enableExtension(VisionOpMode.Extensions.CAMERA_CONTROL); //Manual camera control
+        enableExtension(Extensions.BEACON);         //Beacon detection
+        enableExtension(Extensions.ROTATION);       //Automatic screen rotation correction
+        enableExtension(Extensions.CAMERA_CONTROL); //Manual camera control
 
         /**
          * Set the beacon analysis method
@@ -125,7 +113,7 @@ public class autoBlue extends LinearVisionOpMode{
         while(colSumF()<thresh){
         }
 
-        motorRight.setPower(0);
+        motorLeft.setPower(0);
 
         while(colSumB()<thresh){
         }
@@ -148,24 +136,24 @@ public class autoBlue extends LinearVisionOpMode{
                         motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
                         motorRight.setPower(PERCENT_MAX_POWER * speedStart);
                     }else{
-                        motorLeft.setPower(PERCENT_MAX_POWER*speedStart*LEFT_FIX);
-                        motorRight.setPower(0);
+                        motorRight.setPower(PERCENT_MAX_POWER*speedStart);
+                        motorLeft.setPower(0);
                     }
                 }else{
-                    motorLeft.setPower(PERCENT_MAX_POWER*speedStart*LEFT_FIX);
-                    motorRight.setPower(0);
+                    motorRight.setPower(PERCENT_MAX_POWER*speedStart);
+                    motorLeft.setPower(0);
                     hitWhite=true;
                 }
             }else{
-                motorLeft.setPower(0);
-                motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+                motorRight.setPower(0);
+                motorLeft.setPower(PERCENT_MAX_POWER * speedStart* LEFT_FIX);
                 hitWhite=true;
                 measure = true;
             }
             analyz = beacon.getAnalysis();
             if(analyz.isBeaconFound() && !hasMoved && measure){
                 count++;
-                if(analyz.isLeftBlue()){
+                if(analyz.isLeftRed()){
                     left++;
                 }else {
                     right++;
@@ -212,7 +200,7 @@ public class autoBlue extends LinearVisionOpMode{
         motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
         motorRight.setPower(-1*PERCENT_MAX_POWER * speedStart);
         Thread.sleep(1000);
-        motorLeft.setPower(0);
+        motorRight.setPower(0);
         Thread.sleep(500); //time to go 90 degrees
         //Copy over all the code above
        */
