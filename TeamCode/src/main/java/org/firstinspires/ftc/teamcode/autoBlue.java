@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.content.SyncStatusObserver;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -20,12 +22,14 @@ import org.lasarobotics.vision.util.ScreenOrientation;
 import org.lasarobotics.vision.ftc.resq.Beacon;
 import org.opencv.core.Size;
 
+import java.util.Timer;
+
 /**
  * Created by Winston on 11/23/16.
  */
 
-@Autonomous(name = "AutoRed", group = "AutoRed")
-public class autoRed extends LinearVisionOpMode{
+@Autonomous(name = "AutoBlue", group = "AutoBlue")
+public class autoBlue extends LinearVisionOpMode{
 
     final static float PERCENT_MAX_POWER = 0.20f;
 
@@ -38,13 +42,26 @@ public class autoRed extends LinearVisionOpMode{
 
     ColorSensor scolF;
     ColorSensor scolB;
-    //UltrasonicSensor dist;
 
-    public autoRed(){
+    final static int samples = 100;
+
+    final static int threshLR = (int)(samples*.2);
+
+
+    final static double Go_Left = 0.1;
+
+    final static double Go_Right = 0.9;
+
+    final static long slideTime = 750;
+
+    Servo slider;
+
+    public autoBlue(){
 
     }
 
     public void runOpMode() throws InterruptedException{
+        slider = hardwareMap.servo.get("slider");
         waitForVisionStart();
 
         /**
@@ -86,7 +103,7 @@ public class autoRed extends LinearVisionOpMode{
         motorLeft = hardwareMap.dcMotor.get("left");
         scolF = hardwareMap.colorSensor.get("colorF");
         scolB = hardwareMap.colorSensor.get("colorB");
-        motorLeft.setDirection(DcMotor.Direction.REVERSE);
+        motorRight.setDirection(DcMotor.Direction.REVERSE);
         rotation.setIsUsingSecondaryCamera(false);
         rotation.disableAutoRotate();
         rotation.setActivityOrientationFixed(ScreenOrientation.LANDSCAPE);
@@ -95,59 +112,116 @@ public class autoRed extends LinearVisionOpMode{
 
         waitForStart();
 
-        float speedStart=1;
+        float speedStart=0.6f;
+        motorLeft.setPower(0);
+        motorRight.setPower(0);
+        Thread.sleep(10);
+        motorLeft.setPower(PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
+        motorRight.setPower(PERCENT_MAX_POWER * 0.3);
+        Thread.sleep(10);
         motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
         motorRight.setPower(PERCENT_MAX_POWER * speedStart);
 
-        while(colSumF()>thresh){
+        while(colSumF()<thresh){
         }
 
-        motorLeft.setPower(0);
+        motorRight.setPower(0);
 
-        while(colSumB()>thresh){
+        while(colSumB()<thresh){
         }
 
         Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
 
-        boolean t = true;
-
-
-        while(t){
-            if(colSumF()>thresh){
-                if(colSumB()>thresh){
-                    motorRight.setPower(0);
+        int left=0;
+        int right=0;
+        int count=0;
+        boolean hasMoved =false;
+        boolean hitWhite = false;
+        boolean measure = false;
+        boolean measure2 = false;
+        long startTime = 0;
+        long currTime = 0;
+        while(startTime==0 || currTime-startTime<7000){//for(int i=0;i<100000;i++){
+            if(colSumF()<thresh){
+                if(colSumB()<thresh){
+                    if(!hitWhite) {
+                        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+                        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+                    }else{
+                        motorLeft.setPower(PERCENT_MAX_POWER*speedStart*LEFT_FIX);
+                        motorRight.setPower(0);
+                    }
                 }else{
-                    motorLeft.setPower(0);
+                    motorLeft.setPower(PERCENT_MAX_POWER*speedStart*LEFT_FIX);
+                    motorRight.setPower(0);
+                    hitWhite=true;
                 }
             }else{
-                motorLeft.setPower(PERCENT_MAX_POWER*speedStart*LEFT_FIX);
+                motorLeft.setPower(0);
                 motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+                hitWhite=true;
+                measure = true;
             }
-            //analyz = beacon.getAnalysis();
-            if (analyz.isBeaconFound() ){
-                if (analyz.isRightRed()) {
+            analyz = beacon.getAnalysis();
+            if(analyz.isBeaconFound() && !hasMoved && measure){
+                count++;
+                if(analyz.isLeftBlue()){
+                    left++;
+                }else {
+                    right++;
+                }
 
-                } else {
+                telemetry.addData("left: ",left);
+                telemetry.addData("right: ", right);
+                System.out.println("left data " +left);
+                System.out.println("right data " +right);
+                if(count==samples){
+                    motorLeft.setPower(0);
+                    motorRight.setPower(0);
+                    if(right-left<threshLR){
+                        slider.setPosition(Go_Left);
+                        Thread.sleep(slideTime);
+                        slider.setPosition(0.5);
+                    }else{
+                        slider.setPosition(Go_Right);
+                        Thread.sleep(slideTime);
+                        slider.setPosition(0.5);
+                    }
+                    hasMoved=true;
+                    startTime = System.currentTimeMillis();
 
                 }
             }
+            Thread.sleep(1);
+            currTime = System.currentTimeMillis();
         }
-        //motorLeft.setPower(0);
-        //motorRight.setPower(0);
+        motorLeft.setPower(0);
+        motorRight.setPower(0);
+        Thread.sleep(1000);
+        if(right-left>threshLR){
+            slider.setPosition(Go_Left);
+            Thread.sleep(slideTime);
+            slider.setPosition(0.5);
+        }else{
+            slider.setPosition(Go_Right);
+            Thread.sleep(slideTime);
+            slider.setPosition(0.5);
+        }
 
 
     }
 
     public int colSumF(){
         int colTot=scolF.blue() + scolF.red() + scolF.green();
-        telemetry.addData("colF",colTot);
+        //telemetry.addData("colF",colTot);
         return colTot;
     }
 
     public int colSumB(){
         int colTot=scolB.blue() + scolB.red() + scolB.green();
-        telemetry.addData("colB",colTot);
+        //telemetry.addData("colB",colTot);
         return colTot;
     }
+
 
 }

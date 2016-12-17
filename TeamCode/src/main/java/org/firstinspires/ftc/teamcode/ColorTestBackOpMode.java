@@ -2,22 +2,21 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
 /**
  * Created by Winston on 11/12/16.
  */
 
-@TeleOp(name="ColorTestF", group="ColorTestF")
-public class ColorTestOpMode extends OpMode{
+@TeleOp(name="ColorTestB", group="ColorTestB")
+public class ColorTestBackOpMode extends OpMode{
     ColorSensor colorSense;
 
 
     @Override
     public void init() {
 
-        colorSense = hardwareMap.colorSensor.get("colorF");
+        colorSense = hardwareMap.colorSensor.get("colorB");
     }
 
 
@@ -53,7 +52,7 @@ public class ColorTestOpMode extends OpMode{
     public void stop() {
 
     }
-    public ColorTestOpMode(){
+    public ColorTestBackOpMode(){
 
     }
 
