@@ -64,6 +64,8 @@ public class autoBlue extends LinearVisionOpMode{
         slider = hardwareMap.servo.get("slider");
         waitForVisionStart();
 
+        float speedStart=0.6f;
+
         /**
          * Set the camera used for detection
          * PRIMARY = Front-facing, larger camera
@@ -111,6 +113,21 @@ public class autoBlue extends LinearVisionOpMode{
         cameraControl.setAutoExposureCompensation();
 
         waitForStart();
+        blueLineFollow();
+
+        //For the second beacon
+        motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(-1*PERCENT_MAX_POWER * speedStart);
+        Thread.sleep(1700);
+        motorRight.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        Thread.sleep(1500); //time to go 90 degrees
+        //Copy over all the code above
+
+        blueLineFollow();
+
+    }
+
+    public void blueLineFollow() throws InterruptedException {
 
         float speedStart=0.6f;
         motorLeft.setPower(0);
@@ -164,11 +181,12 @@ public class autoBlue extends LinearVisionOpMode{
             }
             analyz = beacon.getAnalysis();
             if(analyz.isBeaconFound() && !hasMoved && measure){
-                count++;
-                if(analyz.isLeftBlue()){
+                if(analyz.isLeftBlue() && analyz.isRightRed()){
                     left++;
-                }else {
+                    count++;
+                }else if(analyz.isRightBlue() && analyz.isLeftRed()){
                     right++;
+                    count++;
                 }
 
                 telemetry.addData("left: ",left);
@@ -207,17 +225,6 @@ public class autoBlue extends LinearVisionOpMode{
             Thread.sleep(slideTime);
             slider.setPosition(0.5);
         }
-
-        /* //For the second beacon
-        motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-        motorRight.setPower(-1*PERCENT_MAX_POWER * speedStart);
-        Thread.sleep(1000);
-        motorLeft.setPower(0);
-        Thread.sleep(500); //time to go 90 degrees
-        //Copy over all the code above
-       */
-
-
     }
 
     public int colSumF(){
