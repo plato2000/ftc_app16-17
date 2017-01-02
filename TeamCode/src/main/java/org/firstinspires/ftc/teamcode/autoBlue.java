@@ -116,12 +116,16 @@ public class autoBlue extends LinearVisionOpMode{
         blueLineFollow();
 
         //For the second beacon
-        motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-        motorRight.setPower(-1*PERCENT_MAX_POWER * speedStart);
-        Thread.sleep(1700);
+        motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(-1 * PERCENT_MAX_POWER * speedStart);
+        Thread.sleep(3800);
         motorRight.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-        Thread.sleep(1500); //time to go 90 degrees
+        Thread.sleep(800); //time to go 90 degrees
         //Copy over all the code above
+        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+        Thread.sleep(500);
+
 
         blueLineFollow();
 
@@ -161,6 +165,9 @@ public class autoBlue extends LinearVisionOpMode{
         while(startTime==0 || currTime-startTime<7000){//for(int i=0;i<100000;i++){
             if(colSumF()<thresh){
                 if(colSumB()<thresh){
+                    if (measure) {
+                        measure2 = true;
+                    }
                     if(!hitWhite) {
                         motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
                         motorRight.setPower(PERCENT_MAX_POWER * speedStart);
@@ -180,7 +187,7 @@ public class autoBlue extends LinearVisionOpMode{
                 measure = true;
             }
             analyz = beacon.getAnalysis();
-            if(analyz.isBeaconFound() && !hasMoved && measure){
+            if(analyz.isBeaconFound() && !hasMoved && measure && measure2){
                 if(analyz.isLeftBlue() && analyz.isRightRed()){
                     left++;
                     count++;
