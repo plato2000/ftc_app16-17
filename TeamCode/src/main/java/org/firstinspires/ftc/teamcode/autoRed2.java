@@ -16,12 +16,12 @@ import org.opencv.core.Size;
  * Created by Winston on 11/23/16.
  */
 
-@Autonomous(name = "AutoHardcoded", group = "AutoHardcoded")
-public class autoHardcoded extends LinearVisionOpMode{
+@Autonomous(name = "AutoRed2", group = "AutoRed2")
+public class autoRed2 extends LinearVisionOpMode{
 
     final static float PERCENT_MAX_POWER = 0.20f;
 
-    final static float LEFT_FIX = 0.90f;
+    final static float LEFT_FIX = 1.666f;
 
     final static int thresh=300;
 
@@ -44,13 +44,15 @@ public class autoHardcoded extends LinearVisionOpMode{
 
     Servo slider;
 
-    public autoHardcoded(){
+    public autoRed2(){
 
     }
 
     public void runOpMode() throws InterruptedException{
         slider = hardwareMap.servo.get("slider");
         waitForVisionStart();
+
+        float speedStart=0.6f;
 
         /**
          * Set the camera used for detection
@@ -87,11 +89,11 @@ public class autoHardcoded extends LinearVisionOpMode{
         beacon.setColorToleranceRed(0);
         beacon.setColorToleranceBlue(0);
 
-        motorRight = hardwareMap.dcMotor.get("right");
-        motorLeft = hardwareMap.dcMotor.get("left");
+        motorRight = hardwareMap.dcMotor.get("left"); //swapped
+        motorLeft = hardwareMap.dcMotor.get("right");
         scolF = hardwareMap.colorSensor.get("colorF");
         scolB = hardwareMap.colorSensor.get("colorB");
-        motorLeft.setDirection(DcMotor.Direction.REVERSE);
+        motorRight.setDirection(DcMotor.Direction.REVERSE);
         rotation.setIsUsingSecondaryCamera(false);
         rotation.disableAutoRotate();
         rotation.setActivityOrientationFixed(ScreenOrientation.LANDSCAPE);
@@ -99,6 +101,27 @@ public class autoHardcoded extends LinearVisionOpMode{
         cameraControl.setAutoExposureCompensation();
 
         waitForStart();
+        blueLineFollow();
+
+        //For the second beacon
+        motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(-1 * PERCENT_MAX_POWER * speedStart);
+        Thread.sleep(3800);
+        motorRight.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        Thread.sleep(800); //time to go 90 degrees
+        //Copy over all the code above
+        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+        Thread.sleep(500);
+
+
+
+
+        blueLineFollow();
+
+    }
+
+    public void blueLineFollow() throws InterruptedException {
 
         float speedStart=0.6f;
         motorLeft.setPower(0);
@@ -132,6 +155,9 @@ public class autoHardcoded extends LinearVisionOpMode{
         while(startTime==0 || currTime-startTime<7000){//for(int i=0;i<100000;i++){
             if(colSumF()<thresh){
                 if(colSumB()<thresh){
+                    if (measure) {
+                        measure2 = true;
+                    }
                     if(!hitWhite) {
                         motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
                         motorRight.setPower(PERCENT_MAX_POWER * speedStart);
@@ -151,12 +177,13 @@ public class autoHardcoded extends LinearVisionOpMode{
                 measure = true;
             }
             analyz = beacon.getAnalysis();
-            if(analyz.isBeaconFound() && !hasMoved && measure){
-                count++;
-                if(analyz.isLeftBlue()){
+            if(analyz.isBeaconFound() && !hasMoved && measure && measure2){
+                if(analyz.isRightBlue() && analyz.isLeftRed()){
                     left++;
-                }else {
+                    count++;
+                }else if(analyz.isLeftBlue() && analyz.isRightRed()){
                     right++;
+                    count++;
                 }
 
                 telemetry.addData("left: ",left);
@@ -195,17 +222,6 @@ public class autoHardcoded extends LinearVisionOpMode{
             Thread.sleep(slideTime);
             slider.setPosition(0.5);
         }
-
-        /* //For the second beacon
-        motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-        motorRight.setPower(-1*PERCENT_MAX_POWER * speedStart);
-        Thread.sleep(1000);
-        motorLeft.setPower(0);
-        Thread.sleep(500); //time to go 90 degrees
-        //Copy over all the code above
-       */
-
-
     }
 
     public int colSumF(){
