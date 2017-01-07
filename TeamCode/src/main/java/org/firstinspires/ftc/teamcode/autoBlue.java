@@ -1,23 +1,35 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.content.SyncStatusObserver;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.lasarobotics.vision.android.Cameras;
 import org.lasarobotics.vision.ftc.resq.Beacon;
 import org.lasarobotics.vision.opmode.LinearVisionOpMode;
+import org.lasarobotics.vision.opmode.VisionOpMode;
 import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
 import org.lasarobotics.vision.util.ScreenOrientation;
+import org.lasarobotics.vision.ftc.resq.Beacon;
 import org.opencv.core.Size;
+
+import java.util.Timer;
 
 /**
  * Created by Winston on 11/23/16.
  */
 
-@Autonomous(name = "AutoRed", group = "AutoRed")
-public class autoRed extends LinearVisionOpMode{
+@Autonomous(name = "AutoBlue", group = "AutoBlue")
+public class autoBlue extends LinearVisionOpMode{
 
     final static float PERCENT_MAX_POWER = 0.20f;
 
@@ -44,13 +56,15 @@ public class autoRed extends LinearVisionOpMode{
 
     Servo slider;
 
-    public autoRed(){
+    public autoBlue(){
 
     }
 
     public void runOpMode() throws InterruptedException{
         slider = hardwareMap.servo.get("slider");
         waitForVisionStart();
+
+        float speedStart=0.6f;
 
         /**
          * Set the camera used for detection
@@ -70,9 +84,9 @@ public class autoRed extends LinearVisionOpMode{
          * Enable extensions. Use what you need.
          * If you turn on the BEACON extension, it's best to turn on ROTATION too.
          */
-        enableExtension(Extensions.BEACON);         //Beacon detection
-        enableExtension(Extensions.ROTATION);       //Automatic screen rotation correction
-        enableExtension(Extensions.CAMERA_CONTROL); //Manual camera control
+        enableExtension(VisionOpMode.Extensions.BEACON);         //Beacon detection
+        enableExtension(VisionOpMode.Extensions.ROTATION);       //Automatic screen rotation correction
+        enableExtension(VisionOpMode.Extensions.CAMERA_CONTROL); //Manual camera control
 
         /**
          * Set the beacon analysis method
@@ -99,6 +113,25 @@ public class autoRed extends LinearVisionOpMode{
         cameraControl.setAutoExposureCompensation();
 
         waitForStart();
+        blueLineFollow();
+
+        //For the second beacon
+        motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(-1 * PERCENT_MAX_POWER * speedStart);
+        Thread.sleep(3800);
+        motorRight.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        Thread.sleep(800); //time to go 90 degrees
+        //Copy over all the code above
+        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+        Thread.sleep(500);
+
+
+        blueLineFollow();
+
+    }
+
+    public void blueLineFollow() throws InterruptedException {
 
         float speedStart=0.6f;
         motorLeft.setPower(0);
@@ -113,7 +146,7 @@ public class autoRed extends LinearVisionOpMode{
         while(colSumF()<thresh){
         }
 
-        motorLeft.setPower(0);
+        motorRight.setPower(0);
 
         while(colSumB()<thresh){
         }
@@ -132,31 +165,35 @@ public class autoRed extends LinearVisionOpMode{
         while(startTime==0 || currTime-startTime<7000){//for(int i=0;i<100000;i++){
             if(colSumF()<thresh){
                 if(colSumB()<thresh){
+                    if (measure) {
+                        measure2 = true;
+                    }
                     if(!hitWhite) {
                         motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
                         motorRight.setPower(PERCENT_MAX_POWER * speedStart);
                     }else{
-                        motorRight.setPower(PERCENT_MAX_POWER*speedStart);
-                        motorLeft.setPower(0);
+                        motorLeft.setPower(PERCENT_MAX_POWER*speedStart*LEFT_FIX);
+                        motorRight.setPower(0);
                     }
                 }else{
-                    motorRight.setPower(PERCENT_MAX_POWER*speedStart);
-                    motorLeft.setPower(0);
+                    motorLeft.setPower(PERCENT_MAX_POWER*speedStart*LEFT_FIX);
+                    motorRight.setPower(0);
                     hitWhite=true;
                 }
             }else{
-                motorRight.setPower(0);
-                motorLeft.setPower(PERCENT_MAX_POWER * speedStart* LEFT_FIX);
+                motorLeft.setPower(0);
+                motorRight.setPower(PERCENT_MAX_POWER * speedStart);
                 hitWhite=true;
                 measure = true;
             }
             analyz = beacon.getAnalysis();
-            if(analyz.isBeaconFound() && !hasMoved && measure){
-                count++;
-                if(analyz.isLeftRed()){
+            if(analyz.isBeaconFound() && !hasMoved && measure && measure2){
+                if(analyz.isLeftBlue() && analyz.isRightRed()){
                     left++;
-                }else {
+                    count++;
+                }else if(analyz.isRightBlue() && analyz.isLeftRed()){
                     right++;
+                    count++;
                 }
 
                 telemetry.addData("left: ",left);
@@ -195,17 +232,6 @@ public class autoRed extends LinearVisionOpMode{
             Thread.sleep(slideTime);
             slider.setPosition(0.5);
         }
-
-        /* //For the second beacon
-        motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-        motorRight.setPower(-1*PERCENT_MAX_POWER * speedStart);
-        Thread.sleep(1000);
-        motorRight.setPower(0);
-        Thread.sleep(500); //time to go 90 degrees
-        //Copy over all the code above
-       */
-
-
     }
 
     public int colSumF(){

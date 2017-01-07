@@ -16,8 +16,8 @@ import org.opencv.core.Size;
  * Created by Winston on 11/23/16.
  */
 
-@Autonomous(name = "AutoRed", group = "AutoRed")
-public class autoRed extends LinearVisionOpMode{
+@Autonomous(name = "AutoOneCSen", group = "AutoOneCSen")
+public class autoOneCSen extends LinearVisionOpMode{
 
     final static float PERCENT_MAX_POWER = 0.20f;
 
@@ -44,7 +44,7 @@ public class autoRed extends LinearVisionOpMode{
 
     Servo slider;
 
-    public autoRed(){
+    public autoOneCSen(){
 
     }
 
@@ -113,79 +113,44 @@ public class autoRed extends LinearVisionOpMode{
         while(colSumF()<thresh){
         }
 
-        motorLeft.setPower(0);
-
-        while(colSumB()<thresh){
+        while (colSumF()>thresh) {
         }
 
-        Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
+        motorRight.setPower(0);
+        while (colSumF()<thresh){
 
-        int left=0;
-        int right=0;
+        }
+        motorLeft.setPower(0);
+        Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
         int count=0;
-        boolean hasMoved =false;
-        boolean hitWhite = true;
-        boolean measure = false;
-        boolean measure2 = false;
+        int left =0;
+        int right=0;
+        for (int i=0; i<100; i++) {
+            analyz = beacon.getAnalysis();
+            count++;
+            if (analyz.isLeftBlue()) {
+                left++;
+            } else {
+                right++;
+            }
+        }
         long startTime = 0;
         long currTime = 0;
-        while(startTime==0 || currTime-startTime<7000){//for(int i=0;i<100000;i++){
-            if(colSumF()<thresh){
-                if(colSumB()<thresh){
-                    if(!hitWhite) {
-                        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-                        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
-                    }else{
-                        motorRight.setPower(PERCENT_MAX_POWER*speedStart);
-                        motorLeft.setPower(0);
-                    }
-                }else{
-                    motorRight.setPower(PERCENT_MAX_POWER*speedStart);
-                    motorLeft.setPower(0);
-                    hitWhite=true;
-                }
-            }else{
-                motorRight.setPower(0);
-                motorLeft.setPower(PERCENT_MAX_POWER * speedStart* LEFT_FIX);
-                hitWhite=true;
-                measure = true;
-            }
-            analyz = beacon.getAnalysis();
-            if(analyz.isBeaconFound() && !hasMoved && measure){
-                count++;
-                if(analyz.isLeftRed()){
-                    left++;
-                }else {
-                    right++;
-                }
 
-                telemetry.addData("left: ",left);
-                telemetry.addData("right: ", right);
-                System.out.println("left data " +left);
-                System.out.println("right data " +right);
-                if(count==samples){
-                    motorLeft.setPower(0);
-                    motorRight.setPower(0);
-                    if(right-left<threshLR){
-                        slider.setPosition(Go_Left);
-                        Thread.sleep(slideTime);
-                        slider.setPosition(0.5);
-                    }else{
-                        slider.setPosition(Go_Right);
-                        Thread.sleep(slideTime);
-                        slider.setPosition(0.5);
-                    }
-                    hasMoved=true;
-                    startTime = System.currentTimeMillis();
-
-                }
-            }
-            Thread.sleep(1);
-            currTime = System.currentTimeMillis();
+        if(right-left<threshLR){
+            slider.setPosition(Go_Left);
+            Thread.sleep(slideTime);
+            slider.setPosition(0.5);
+        }else{
+            slider.setPosition(Go_Right);
+            Thread.sleep(slideTime);
+            slider.setPosition(0.5);
         }
+        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+        Thread.sleep(6000);
         motorLeft.setPower(0);
         motorRight.setPower(0);
-        Thread.sleep(1000);
         if(right-left>threshLR){
             slider.setPosition(Go_Left);
             Thread.sleep(slideTime);
@@ -196,11 +161,15 @@ public class autoRed extends LinearVisionOpMode{
             slider.setPosition(0.5);
         }
 
+
+
+
+
         /* //For the second beacon
         motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
         motorRight.setPower(-1*PERCENT_MAX_POWER * speedStart);
         Thread.sleep(1000);
-        motorRight.setPower(0);
+        motorLeft.setPower(0);
         Thread.sleep(500); //time to go 90 degrees
         //Copy over all the code above
        */

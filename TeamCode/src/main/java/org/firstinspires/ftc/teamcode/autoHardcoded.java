@@ -16,8 +16,8 @@ import org.opencv.core.Size;
  * Created by Winston on 11/23/16.
  */
 
-@Autonomous(name = "AutoRed", group = "AutoRed")
-public class autoRed extends LinearVisionOpMode{
+@Autonomous(name = "AutoHardcoded", group = "AutoHardcoded")
+public class autoHardcoded extends LinearVisionOpMode{
 
     final static float PERCENT_MAX_POWER = 0.20f;
 
@@ -44,7 +44,7 @@ public class autoRed extends LinearVisionOpMode{
 
     Servo slider;
 
-    public autoRed(){
+    public autoHardcoded(){
 
     }
 
@@ -113,7 +113,7 @@ public class autoRed extends LinearVisionOpMode{
         while(colSumF()<thresh){
         }
 
-        motorLeft.setPower(0);
+        motorRight.setPower(0);
 
         while(colSumB()<thresh){
         }
@@ -136,24 +136,24 @@ public class autoRed extends LinearVisionOpMode{
                         motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
                         motorRight.setPower(PERCENT_MAX_POWER * speedStart);
                     }else{
-                        motorRight.setPower(PERCENT_MAX_POWER*speedStart);
-                        motorLeft.setPower(0);
+                        motorLeft.setPower(PERCENT_MAX_POWER*speedStart*LEFT_FIX);
+                        motorRight.setPower(0);
                     }
                 }else{
-                    motorRight.setPower(PERCENT_MAX_POWER*speedStart);
-                    motorLeft.setPower(0);
+                    motorLeft.setPower(PERCENT_MAX_POWER*speedStart*LEFT_FIX);
+                    motorRight.setPower(0);
                     hitWhite=true;
                 }
             }else{
-                motorRight.setPower(0);
-                motorLeft.setPower(PERCENT_MAX_POWER * speedStart* LEFT_FIX);
+                motorLeft.setPower(0);
+                motorRight.setPower(PERCENT_MAX_POWER * speedStart);
                 hitWhite=true;
                 measure = true;
             }
             analyz = beacon.getAnalysis();
             if(analyz.isBeaconFound() && !hasMoved && measure){
                 count++;
-                if(analyz.isLeftRed()){
+                if(analyz.isLeftBlue()){
                     left++;
                 }else {
                     right++;
@@ -200,7 +200,7 @@ public class autoRed extends LinearVisionOpMode{
         motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
         motorRight.setPower(-1*PERCENT_MAX_POWER * speedStart);
         Thread.sleep(1000);
-        motorRight.setPower(0);
+        motorLeft.setPower(0);
         Thread.sleep(500); //time to go 90 degrees
         //Copy over all the code above
        */

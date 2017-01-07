@@ -27,6 +27,9 @@ public class hardCodeTest extends LinearVisionOpMode {
 
     final static long slideTime = 750;
 
+    final static int samples = 100;
+
+    final static int thresh = (int)(samples*0.8);
 
     Servo slider;
 
@@ -97,33 +100,40 @@ public class hardCodeTest extends LinearVisionOpMode {
         Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
 
 
-        boolean b = analyz.isBeaconFound();
+       /* boolean b = analyz.isBeaconFound();
         while (!b){
             //Thread.sleep(100);
             analyz = beacon.getAnalysis();
 
             b = analyz.isBeaconFound();
-        }
+        }*/
 
         analyz = beacon.getAnalysis();
 
         int left=0;
         int right=0;
         while(true){
+            telemetry.addData("beaconFound",analyz.isBeaconFound());
             left=0;
             right=0;
-            for(int i=0; i<90;i++){
+            for(int i=0; i<samples;i++){
                 analyz = beacon.getAnalysis();
                 if(analyz.isLeftRed()){
                     left++;
                 }else{
                     right++;
                 }
-                Thread.sleep(10);
+                Thread.sleep(5);
             }
 
             telemetry.addData("left: ",left);
-            telemetry.addData("right: ",right);
+            telemetry.addData("right: ", right);
+            if(right-left < thresh){
+                telemetry.addData("left","left");
+            }else{
+                telemetry.addData("right","right");
+            }
+            Thread.sleep(1000);
         }
 
         /*if(analyz.isLeftRed()){
