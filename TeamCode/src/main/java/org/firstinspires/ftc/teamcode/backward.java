@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class backward extends LinearOpMode{
 
     final static float PERCENT_MAX_POWER = 0.20f;
-    final static float LEFT_FIX = 0.90f;
+    final static float LEFT_FIX = 1.0f;
     DcMotor motorRight;
     DcMotor motorLeft;
 

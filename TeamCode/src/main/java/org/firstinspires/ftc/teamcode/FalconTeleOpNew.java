@@ -21,7 +21,7 @@ public class FalconTeleOpNew extends OpMode {
 
     final static float PERCENT_POWER = 0.20f;
 
-    final static float LEFT_FIX = 0.90f;
+    final static float LEFT_FIX = 1.0f;
 
     DcMotor motorRight;
     DcMotor motorLeft;

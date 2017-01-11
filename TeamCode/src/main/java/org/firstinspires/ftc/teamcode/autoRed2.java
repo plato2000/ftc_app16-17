@@ -21,7 +21,7 @@ public class autoRed2 extends LinearVisionOpMode{
 
     final static float PERCENT_MAX_POWER = 0.20f;
 
-    final static float LEFT_FIX = 1.666f;
+    final static float LEFT_FIX = 1.0f;
 
     final static int thresh=300;
 
