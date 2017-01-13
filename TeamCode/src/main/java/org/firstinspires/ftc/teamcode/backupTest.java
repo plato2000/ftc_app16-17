@@ -16,8 +16,8 @@ import org.opencv.core.Size;
  * Created by Winston on 11/23/16.
  */
 
-@Autonomous(name = "AutoRed2", group = "AutoRed2")
-public class autoRed2 extends LinearVisionOpMode{
+@Autonomous(name = "backupTest", group = "backTest")
+public class backupTest extends LinearVisionOpMode{
 
     final static float PERCENT_MAX_POWER = 0.20f;
 
@@ -44,7 +44,7 @@ public class autoRed2 extends LinearVisionOpMode{
 
     Servo slider;
 
-    public autoRed2(){
+    public backupTest(){
 
     }
 
@@ -101,12 +101,16 @@ public class autoRed2 extends LinearVisionOpMode{
         cameraControl.setAutoExposureCompensation();
 
         waitForStart();
-        blueLineFollow();
+        motorLeft.setPower(0);
+        motorRight.setPower(0);
+        Thread.sleep(10);
+
+        //blueLineFollow();
 
         //For the second beacon
         motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
         motorRight.setPower(-1 * PERCENT_MAX_POWER * speedStart);
-        Thread.sleep(2250);
+        Thread.sleep(3000);
 
         motorLeft.setPower(0);
         motorRight.setPower(0);
@@ -114,7 +118,7 @@ public class autoRed2 extends LinearVisionOpMode{
 
         motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
         motorRight.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-        Thread.sleep(760); //time to go 90 degrees
+        Thread.sleep(650); //time to go 90 degrees
         //Copy over all the code above
         motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
         motorRight.setPower(PERCENT_MAX_POWER * speedStart);
