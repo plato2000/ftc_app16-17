@@ -15,15 +15,15 @@ import org.opencv.core.Size;
 /**
  * Created by Winston on 11/23/16.
  */
-
-//@Autonomous(name = "AutoHardcoded", group = "AutoHardcoded")
-public class autoHardcoded extends LinearVisionOpMode{
+//USES RED COLOR ONLY, MEANT FOR PINK LINE
+@Autonomous(name = "AutoRed3", group = "AutoRed3")
+public class autoRed3 extends LinearVisionOpMode{
 
     final static float PERCENT_MAX_POWER = 0.20f;
 
-    final static float LEFT_FIX = 0.90f;
+    final static float LEFT_FIX = 1.0f;
 
-    final static int thresh=300;
+    final static int thresh=125;
 
     DcMotor motorRight;
     DcMotor motorLeft;
@@ -33,7 +33,7 @@ public class autoHardcoded extends LinearVisionOpMode{
 
     final static int samples = 100;
 
-    final static int threshLR = (int)(samples*.2);
+    final static int threshLR = 0;//(int)(samples*.2);
 
 
     final static double Go_Left = 0.1;
@@ -44,13 +44,15 @@ public class autoHardcoded extends LinearVisionOpMode{
 
     Servo slider;
 
-    public autoHardcoded(){
+    public autoRed3(){
 
     }
 
     public void runOpMode() throws InterruptedException{
         slider = hardwareMap.servo.get("slider");
         waitForVisionStart();
+
+        float speedStart=0.6f;
 
         /**
          * Set the camera used for detection
@@ -87,11 +89,11 @@ public class autoHardcoded extends LinearVisionOpMode{
         beacon.setColorToleranceRed(0);
         beacon.setColorToleranceBlue(0);
 
-        motorRight = hardwareMap.dcMotor.get("right");
-        motorLeft = hardwareMap.dcMotor.get("left");
+        motorRight = hardwareMap.dcMotor.get("left"); //swapped
+        motorLeft = hardwareMap.dcMotor.get("right");
         scolF = hardwareMap.colorSensor.get("colorF");
         scolB = hardwareMap.colorSensor.get("colorB");
-        motorLeft.setDirection(DcMotor.Direction.REVERSE);
+        motorRight.setDirection(DcMotor.Direction.REVERSE);
         rotation.setIsUsingSecondaryCamera(false);
         rotation.disableAutoRotate();
         rotation.setActivityOrientationFixed(ScreenOrientation.LANDSCAPE);
@@ -99,6 +101,33 @@ public class autoHardcoded extends LinearVisionOpMode{
         cameraControl.setAutoExposureCompensation();
 
         waitForStart();
+        blueLineFollow();
+
+        //For the second beacon
+        motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(-1 * PERCENT_MAX_POWER * speedStart);
+        Thread.sleep(2250);
+
+        motorLeft.setPower(0);
+        motorRight.setPower(0);
+        Thread.sleep(100);
+
+        motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        Thread.sleep(760); //time to go 90 degrees
+        //Copy over all the code above
+        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+        Thread.sleep(500);
+
+
+
+
+        blueLineFollow();
+
+    }
+
+    public void blueLineFollow() throws InterruptedException {
 
         float speedStart=0.6f;
         motorLeft.setPower(0);
@@ -127,11 +156,15 @@ public class autoHardcoded extends LinearVisionOpMode{
         boolean hitWhite = true;
         boolean measure = false;
         boolean measure2 = false;
-        long startTime = 0;
+        long choiceTime = 0;
         long currTime = 0;
-        while(startTime==0 || currTime-startTime<7000){//for(int i=0;i<100000;i++){
+        long startTime = System.currentTimeMillis();
+        while(choiceTime==0 || currTime-choiceTime<5000){//for(int i=0;i<100000;i++){
             if(colSumF()<thresh){
                 if(colSumB()<thresh){
+                    if (measure) {
+                        measure2 = true;
+                    }
                     if(!hitWhite) {
                         motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
                         motorRight.setPower(PERCENT_MAX_POWER * speedStart);
@@ -151,12 +184,13 @@ public class autoHardcoded extends LinearVisionOpMode{
                 measure = true;
             }
             analyz = beacon.getAnalysis();
-            if(analyz.isBeaconFound() && !hasMoved && measure){
-                count++;
-                if(analyz.isLeftBlue()){
+            if(analyz.isBeaconFound() && !hasMoved && currTime-startTime>2000){//&& measure && measure2){
+                if(analyz.isRightBlue() && analyz.isLeftRed()){
                     left++;
-                }else {
+                    count++;
+                }else if(analyz.isLeftBlue() && analyz.isRightRed()){
                     right++;
+                    count++;
                 }
 
                 telemetry.addData("left: ",left);
@@ -176,7 +210,7 @@ public class autoHardcoded extends LinearVisionOpMode{
                         slider.setPosition(0.5);
                     }
                     hasMoved=true;
-                    startTime = System.currentTimeMillis();
+                    choiceTime = System.currentTimeMillis();
 
                 }
             }
@@ -195,29 +229,18 @@ public class autoHardcoded extends LinearVisionOpMode{
             Thread.sleep(slideTime);
             slider.setPosition(0.5);
         }
-
-        /* //For the second beacon
-        motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-        motorRight.setPower(-1*PERCENT_MAX_POWER * speedStart);
-        Thread.sleep(1000);
-        motorLeft.setPower(0);
-        Thread.sleep(500); //time to go 90 degrees
-        //Copy over all the code above
-       */
-
-
     }
 
     public int colSumF(){
-        int colTot=scolF.blue() + scolF.red() + scolF.green();
+        //int colTot=scolF.blue() + scolF.red() + scolF.green();
         //telemetry.addData("colF",colTot);
-        return colTot;
+        return scolF.red();
     }
 
     public int colSumB(){
-        int colTot=scolB.blue() + scolB.red() + scolB.green();
+        //int colTot=scolB.blue() + scolB.red() + scolB.green();
         //telemetry.addData("colB",colTot);
-        return colTot;
+        return scolB.red();
     }
 
 

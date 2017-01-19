@@ -16,7 +16,7 @@ import org.opencv.core.Size;
  * Created by Winston on 11/23/16.
  */
 
-@Autonomous(name = "AutoOneCSen", group = "AutoOneCSen")
+//@Autonomous(name = "AutoOneCSen", group = "AutoOneCSen")
 public class autoOneCSen extends LinearVisionOpMode{
 
     final static float PERCENT_MAX_POWER = 0.20f;
