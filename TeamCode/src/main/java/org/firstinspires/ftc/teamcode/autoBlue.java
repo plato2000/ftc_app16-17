@@ -45,7 +45,7 @@ public class autoBlue extends LinearVisionOpMode{
 
     final static int samples = 100;
 
-    final static int threshLR = (int)(samples*.2);
+    final static int threshLR = 0;//(int)(samples*.2);
 
 
     final static double Go_Left = 0.1;
@@ -160,9 +160,10 @@ public class autoBlue extends LinearVisionOpMode{
         boolean hitWhite = true;
         boolean measure = false;
         boolean measure2 = false;
-        long startTime = 0;
+        long choiceTime = 0;
         long currTime = 0;
-        while(startTime==0 || currTime-startTime<7000){//for(int i=0;i<100000;i++){
+        long startTime = System.currentTimeMillis();
+        while(choiceTime==0 || currTime-choiceTime<7000){//for(int i=0;i<100000;i++){
             if(colSumF()<thresh){
                 if(colSumB()<thresh){
                     if (measure) {
@@ -187,7 +188,7 @@ public class autoBlue extends LinearVisionOpMode{
                 measure = true;
             }
             analyz = beacon.getAnalysis();
-            if(analyz.isBeaconFound() && !hasMoved && measure && measure2){
+            if(analyz.isBeaconFound() && !hasMoved && currTime-startTime>2000){
                 if(analyz.isLeftBlue() && analyz.isRightRed()){
                     left++;
                     count++;
@@ -213,7 +214,7 @@ public class autoBlue extends LinearVisionOpMode{
                         slider.setPosition(0.5);
                     }
                     hasMoved=true;
-                    startTime = System.currentTimeMillis();
+                    choiceTime = System.currentTimeMillis();
 
                 }
             }
