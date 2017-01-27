@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.lasarobotics.vision.android.Cameras;
@@ -33,7 +34,7 @@ public class autoRed2 extends LinearVisionOpMode{
 
     final static int samples = 100;
 
-    final static int threshLR = 0;//(int)(samples*.2);
+    final static int threshLR = (int)(samples*.2);
 
 
     final static double Go_Left = 0.1;
@@ -48,82 +49,89 @@ public class autoRed2 extends LinearVisionOpMode{
 
     }
 
-    public void runOpMode() throws InterruptedException{
-        slider = hardwareMap.servo.get("slider");
-        waitForVisionStart();
+    public void runOpMode() {
+        try {
+            slider = hardwareMap.servo.get("slider");
+            waitForVisionStart();
 
-        float speedStart=0.6f;
+            float speedStart = 0.6f;
 
-        /**
-         * Set the camera used for detection
-         * PRIMARY = Front-facing, larger camera
-         * SECONDARY = Screen-facing, "selfie" camera :D
-         **/
-        this.setCamera(Cameras.PRIMARY);
+            /**
+             * Set the camera used for detection
+             * PRIMARY = Front-facing, larger camera
+             * SECONDARY = Screen-facing, "selfie" camera :D
+             **/
+            this.setCamera(Cameras.PRIMARY);
 
-        /**
-         * Set the frame size
-         * Larger = sometimes more accurate, but also much slower
-         * After this method runs, it will set the "width" and "height" of the frame
-         **/
-        this.setFrameSize(new Size(900, 900));
+            /**
+             * Set the frame size
+             * Larger = sometimes more accurate, but also much slower
+             * After this method runs, it will set the "width" and "height" of the frame
+             **/
+            this.setFrameSize(new Size(900, 900));
 
-        /**
-         * Enable extensions. Use what you need.
-         * If you turn on the BEACON extension, it's best to turn on ROTATION too.
-         */
-        enableExtension(Extensions.BEACON);         //Beacon detection
-        enableExtension(Extensions.ROTATION);       //Automatic screen rotation correction
-        enableExtension(Extensions.CAMERA_CONTROL); //Manual camera control
+            /**
+             * Enable extensions. Use what you need.
+             * If you turn on the BEACON extension, it's best to turn on ROTATION too.
+             */
+            enableExtension(Extensions.BEACON);         //Beacon detection
+            enableExtension(Extensions.ROTATION);       //Automatic screen rotation correction
+            enableExtension(Extensions.CAMERA_CONTROL); //Manual camera control
 
-        /**
-         * Set the beacon analysis method
-         * Try them all and see what works!
-         */
-        beacon.setAnalysisMethod(Beacon.AnalysisMethod.FAST);
+            /**
+             * Set the beacon analysis method
+             * Try them all and see what works!
+             */
+            beacon.setAnalysisMethod(Beacon.AnalysisMethod.FAST);
 
-        /**
-         * Set color tolerances
-         * 0 is default, -1 is minimum and 1 is maximum tolerance
-         */
-        beacon.setColorToleranceRed(0);
-        beacon.setColorToleranceBlue(0);
+            /**
+             * Set color tolerances
+             * 0 is default, -1 is minimum and 1 is maximum tolerance
+             */
+            beacon.setColorToleranceRed(0);
+            beacon.setColorToleranceBlue(0);
 
-        motorRight = hardwareMap.dcMotor.get("left"); //swapped
-        motorLeft = hardwareMap.dcMotor.get("right");
-        scolF = hardwareMap.colorSensor.get("colorF");
-        scolB = hardwareMap.colorSensor.get("colorB");
-        motorRight.setDirection(DcMotor.Direction.REVERSE);
-        rotation.setIsUsingSecondaryCamera(false);
-        rotation.disableAutoRotate();
-        rotation.setActivityOrientationFixed(ScreenOrientation.LANDSCAPE);
-        cameraControl.setColorTemperature(CameraControlExtension.ColorTemperature.AUTO);
-        cameraControl.setAutoExposureCompensation();
+            motorRight = hardwareMap.dcMotor.get("left"); //swapped
+            motorLeft = hardwareMap.dcMotor.get("right");
 
-        waitForStart();
-        blueLineFollow();
-
-        //For the second beacon
-        motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-        motorRight.setPower(-1 * PERCENT_MAX_POWER * speedStart);
-        Thread.sleep(2250);
-
-        motorLeft.setPower(0);
-        motorRight.setPower(0);
-        Thread.sleep(100);
-
-        motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-        motorRight.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-        Thread.sleep(760); //time to go 90 degrees
-        //Copy over all the code above
-        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
-        Thread.sleep(500);
+            motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
+            scolF = hardwareMap.colorSensor.get("colorF");
+            scolB = hardwareMap.colorSensor.get("colorB");
+            motorRight.setDirection(DcMotor.Direction.REVERSE);
+            rotation.setIsUsingSecondaryCamera(false);
+            rotation.disableAutoRotate();
+            rotation.setActivityOrientationFixed(ScreenOrientation.LANDSCAPE);
+            cameraControl.setColorTemperature(CameraControlExtension.ColorTemperature.AUTO);
+            cameraControl.setAutoExposureCompensation();
+
+            waitForStart();
+            blueLineFollow();
+
+            //For the second beacon
+            motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+            motorRight.setPower(-1 * PERCENT_MAX_POWER * speedStart);
+            Thread.sleep(2250);
+
+            motorLeft.setPower(0);
+            motorRight.setPower(0);
+            Thread.sleep(100);
+
+            motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+            motorRight.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+            Thread.sleep(760); //time to go 90 degrees
+            //Copy over all the code above
+            motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+            motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+            Thread.sleep(500);
 
 
-        blueLineFollow();
+            blueLineFollow();
+        }catch(InterruptedException ie){
+            return;
+        }
 
     }
 

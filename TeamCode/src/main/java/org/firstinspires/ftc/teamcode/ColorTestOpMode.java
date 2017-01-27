@@ -42,7 +42,6 @@ public class ColorTestOpMode extends OpMode{
         int b1 = colorSense.blue()+colorSense.green()+colorSense.red();
 
         telemetry.addData("totcol ",b1 );
-        telemetry.addData("RED ", colorSense.red());
 
     }
 

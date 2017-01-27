@@ -28,13 +28,20 @@ public class forward extends LinearOpMode{
         motorLeft = hardwareMap.dcMotor.get("left");
         motorLeft.setDirection(DcMotor.Direction.REVERSE);
 
+        motorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorLeft.setMaxSpeed(800);
+        motorRight.setMaxSpeed(800);
+
         waitForStart();
 
         float speedStart=1;
+        motorRight.setTargetPosition(150);
+        motorLeft.setTargetPosition(150);
         motorRight.setPower(PERCENT_MAX_POWER*speedStart);
         motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
 
-        Thread.sleep(2000);
+        //Thread.sleep(2000);
 
     }
 
