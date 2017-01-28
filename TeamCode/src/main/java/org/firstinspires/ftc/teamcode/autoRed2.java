@@ -94,9 +94,6 @@ public class autoRed2 extends LinearVisionOpMode{
             motorRight = hardwareMap.dcMotor.get("left"); //swapped
             motorLeft = hardwareMap.dcMotor.get("right");
 
-            motorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
 
             scolF = hardwareMap.colorSensor.get("colorF");
             scolB = hardwareMap.colorSensor.get("colorB");
@@ -111,21 +108,65 @@ public class autoRed2 extends LinearVisionOpMode{
             blueLineFollow();
 
             //For the second beacon
-            motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-            motorRight.setPower(-1 * PERCENT_MAX_POWER * speedStart);
-            Thread.sleep(2250);
+
+            motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             motorLeft.setPower(0);
             motorRight.setPower(0);
-            Thread.sleep(100);
+            Thread.sleep(10);
+            motorLeft.setPower(-1*PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
+            motorRight.setPower(-1*PERCENT_MAX_POWER * 0.3);
+            Thread.sleep(10);
+            motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+            motorRight.setPower(-1*PERCENT_MAX_POWER * speedStart);
 
-            motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-            motorRight.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-            Thread.sleep(760); //time to go 90 degrees
+            while (motorRight.getCurrentPosition() < 4000) {
+            }
+
+            motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            motorLeft.setPower(0);
+            motorRight.setPower(0);
+            Thread.sleep(50);
+
+            motorLeft.setPower(0);
+            motorRight.setPower(0);
+            Thread.sleep(1);
+            motorLeft.setPower(-1*PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
+            motorRight.setPower(PERCENT_MAX_POWER * 0.3);
+            Thread.sleep(1);
+            motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+            motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+
+            while (motorRight.getCurrentPosition() > -270) {
+            }
+
+            motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
+            //Thread.sleep(760); //time to go 90 degrees
             //Copy over all the code above
+            motorLeft.setPower(0);
+            motorRight.setPower(0);
+            Thread.sleep(10);
+            motorLeft.setPower(PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
+            motorRight.setPower(PERCENT_MAX_POWER * 0.3);
+            Thread.sleep(10);
             motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
             motorRight.setPower(PERCENT_MAX_POWER * speedStart);
-            Thread.sleep(500);
+            Thread.sleep(1000);
 
 
             blueLineFollow();

@@ -136,7 +136,9 @@ public class autoBlue extends LinearVisionOpMode{
 
     }
 
-    public void blueLineFollow() throws InterruptedException {
+    public void blueLineFollow() {
+
+        try {
             float speedStart = 0.6f;
             motorLeft.setPower(0);
             motorRight.setPower(0);
@@ -237,6 +239,10 @@ public class autoBlue extends LinearVisionOpMode{
                 Thread.sleep(slideTime);
                 slider.setPosition(0.5);
             }
+
+        } catch (InterruptedException e) {
+            return;
+        }
 
     }
 
