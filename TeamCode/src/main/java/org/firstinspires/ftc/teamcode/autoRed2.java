@@ -109,7 +109,7 @@ public class autoRed2 extends LinearVisionOpMode{
 
             //For the second beacon
 
-            motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            /*motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -124,8 +124,8 @@ public class autoRed2 extends LinearVisionOpMode{
             motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
             motorRight.setPower(-1*PERCENT_MAX_POWER * speedStart);
 
-            while (motorRight.getCurrentPosition() < 4000) {
-            }
+            while (motorRight.getCurrentPosition() < 3400) {
+            }*/
 
             motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -135,18 +135,14 @@ public class autoRed2 extends LinearVisionOpMode{
 
             motorLeft.setPower(0);
             motorRight.setPower(0);
-            Thread.sleep(50);
-
-            motorLeft.setPower(0);
-            motorRight.setPower(0);
-            Thread.sleep(1);
+            Thread.sleep(10);
             motorLeft.setPower(-1*PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
             motorRight.setPower(PERCENT_MAX_POWER * 0.3);
             Thread.sleep(1);
             motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
             motorRight.setPower(PERCENT_MAX_POWER * speedStart);
 
-            while (motorRight.getCurrentPosition() > -270) {
+            while (motorRight.getCurrentPosition() > -290) {
             }
 
             motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -158,7 +154,7 @@ public class autoRed2 extends LinearVisionOpMode{
 
             //Thread.sleep(760); //time to go 90 degrees
             //Copy over all the code above
-            motorLeft.setPower(0);
+            /*motorLeft.setPower(0);
             motorRight.setPower(0);
             Thread.sleep(10);
             motorLeft.setPower(PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
@@ -166,131 +162,166 @@ public class autoRed2 extends LinearVisionOpMode{
             Thread.sleep(10);
             motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
             motorRight.setPower(PERCENT_MAX_POWER * speedStart);
-            Thread.sleep(1000);
+            Thread.sleep(1000);*/
 
 
             blueLineFollow();
+            Thread.sleep(1000);
         }catch(InterruptedException ie){
             return;
         }
 
     }
 
-    public void blueLineFollow() throws InterruptedException {
+    public void blueLineFollow() {
 
-        float speedStart=0.6f;
-        motorLeft.setPower(0);
-        motorRight.setPower(0);
-        Thread.sleep(10);
-        motorLeft.setPower(PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
-        motorRight.setPower(PERCENT_MAX_POWER * 0.3);
-        Thread.sleep(10);
-        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+        try {
 
-        while(colSumF()<thresh){
-        }
+            float speedStart = 0.6f;
+            motorLeft.setPower(0);
+            motorRight.setPower(0);
+            Thread.sleep(10);
+            motorLeft.setPower(PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
+            motorRight.setPower(PERCENT_MAX_POWER * 0.3);
+            Thread.sleep(10);
+            motorLeft.setPower(PERCENT_MAX_POWER * 2 * LEFT_FIX);
+            motorRight.setPower(PERCENT_MAX_POWER * 2);
 
-        motorRight.setPower(0);
+            while (colSumF() < thresh) {
+            }
 
-        while(colSumB()<thresh){
-        }
+            motorRight.setPower(0);
 
-        Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
+            while (colSumB() < thresh) {
+            }
 
-        int left=0;
-        int right=0;
-        int count=0;
-        boolean hasMoved =false;
-        boolean hitWhite = true;
-        boolean measure = false;
-        boolean measure2 = false;
-        long choiceTime = 0;
-        long currTime = 0;
-        long startTime = System.currentTimeMillis();
-        while(choiceTime==0 || currTime-choiceTime<5000){//for(int i=0;i<100000;i++){
-            if(colSumF()<thresh){
-                if(colSumB()<thresh){
-                    if (measure) {
-                        measure2 = true;
-                    }
-                    if(!hitWhite) {
+            Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
+
+            int left = 0;
+            int right = 0;
+            int count = 0;
+            boolean hasMoved = false;
+            boolean hitWhite = true;
+            boolean measure = false;
+            boolean measure2 = false;
+            long choiceTime = 0;
+            long currTime = 0;
+            long startTime = System.currentTimeMillis();
+            while (choiceTime == 0 || currTime - choiceTime < 2000) {//for(int i=0;i<100000;i++){
+                if (colSumF() < thresh) {
+                    if (colSumB() < thresh) {
+                        if (measure) {
+                            measure2 = true;
+                        }
+                        if (!hitWhite) {
+                            motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+                            motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+                        } else {
+                            motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+                            motorRight.setPower(0);
+                        }
+                    } else {
                         motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-                        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
-                    }else{
-                        motorLeft.setPower(PERCENT_MAX_POWER*speedStart*LEFT_FIX);
                         motorRight.setPower(0);
+                        hitWhite = true;
                     }
-                }else{
-                    motorLeft.setPower(PERCENT_MAX_POWER*speedStart*LEFT_FIX);
-                    motorRight.setPower(0);
-                    hitWhite=true;
-                }
-            }else{
-                motorLeft.setPower(0);
-                motorRight.setPower(PERCENT_MAX_POWER * speedStart);
-                hitWhite=true;
-                measure = true;
-            }
-            analyz = beacon.getAnalysis();
-            if(analyz.isBeaconFound() && !hasMoved && currTime-startTime>2000){
-                if(analyz.isRightBlue() && analyz.isLeftRed()){
-                    left++;
-                    count++;
-                }else if(analyz.isLeftBlue() && analyz.isRightRed()){
-                    right++;
-                    count++;
-                }
-
-                telemetry.addData("left: ",left);
-                telemetry.addData("right: ", right);
-                System.out.println("left data " +left);
-                System.out.println("right data " +right);
-                if(count==samples){
+                } else {
                     motorLeft.setPower(0);
-                    motorRight.setPower(0);
-                    if(right-left<threshLR){
-                        slider.setPosition(Go_Left);
-                        Thread.sleep(slideTime);
-                        slider.setPosition(0.5);
-                    }else{
-                        slider.setPosition(Go_Right);
-                        Thread.sleep(slideTime);
-                        slider.setPosition(0.5);
-                    }
-                    hasMoved=true;
-                    choiceTime = System.currentTimeMillis();
-
+                    motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+                    hitWhite = true;
+                    measure = true;
                 }
+                analyz = beacon.getAnalysis();
+                if (analyz.isBeaconFound() && !hasMoved && currTime - startTime > 2000) {
+                    if (analyz.isRightBlue() && analyz.isLeftRed()) {
+                        left++;
+                        count++;
+                    } else if (analyz.isLeftBlue() && analyz.isRightRed()) {
+                        right++;
+                        count++;
+                    }
+
+                    telemetry.addData("left: ", left);
+                    telemetry.addData("right: ", right);
+                    System.out.println("left data " + left);
+                    System.out.println("right data " + right);
+                    if (count == samples) {
+                        motorLeft.setPower(0);
+                        motorRight.setPower(0);
+                        if (right - left < threshLR) {
+                            slider.setPosition(Go_Left);
+                            Thread.sleep(slideTime);
+                            slider.setPosition(0.5);
+                        } else {
+                            slider.setPosition(Go_Right);
+                            Thread.sleep(slideTime);
+                            slider.setPosition(0.5);
+                        }
+                        hasMoved = true;
+                        System.out.println("print_hasmoved");
+                        choiceTime = System.currentTimeMillis();
+
+                    }
+                }
+                Thread.sleep(1);
+                currTime = System.currentTimeMillis();
+                System.out.println("print_" + currTime);
+                System.out.println("print_" + (choiceTime == 0 || currTime - choiceTime < 2000));
             }
-            Thread.sleep(1);
-            currTime = System.currentTimeMillis();
-        }
-        motorLeft.setPower(0);
-        motorRight.setPower(0);
-        Thread.sleep(1000);
-        if(right-left>threshLR){
-            slider.setPosition(Go_Left);
-            Thread.sleep(slideTime);
-            slider.setPosition(0.5);
-        }else{
-            slider.setPosition(Go_Right);
-            Thread.sleep(slideTime);
-            slider.setPosition(0.5);
+
+            System.out.println("print_1");
+            motorLeft.setPower(0);
+            System.out.println("print_1.5");
+            motorRight.setPower(PERCENT_MAX_POWER * 5);
+            System.out.println("print_2");
+            Thread.sleep(500);
+            motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            motorLeft.setPower(0);
+            motorRight.setPower(0);
+            Thread.sleep(10);
+            motorLeft.setPower(-1 * PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
+            motorRight.setPower(-1 * PERCENT_MAX_POWER * 0.3);
+            Thread.sleep(10);
+            motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+            motorRight.setPower(-1 * PERCENT_MAX_POWER * speedStart);
+
+            while (motorRight.getCurrentPosition() < 4400) {
+            }
+            motorLeft.setPower(0);
+            motorRight.setPower(0);
+            Thread.sleep(10);
+            if (right - left > threshLR) {
+                slider.setPosition(Go_Left);
+                Thread.sleep(slideTime);
+                slider.setPosition(0.5);
+            } else {
+                slider.setPosition(Go_Right);
+                Thread.sleep(slideTime);
+                slider.setPosition(0.5);
+            }
+        } catch(InterruptedException e){
+            return;
         }
     }
 
-    public int colSumF(){
-        int colTot=scolF.blue() + scolF.red() + scolF.green();
+    public int colSumF() {
+        int colTot = scolF.blue() + scolF.red() + scolF.green();
         //telemetry.addData("colF",colTot);
         return colTot;
     }
 
-    public int colSumB(){
-        int colTot=scolB.blue() + scolB.red() + scolB.green();
+    public int colSumB() {
+        int colTot = scolB.blue() + scolB.red() + scolB.green();
         //telemetry.addData("colB",colTot);
         return colTot;
     }
+
+
 
 
 }

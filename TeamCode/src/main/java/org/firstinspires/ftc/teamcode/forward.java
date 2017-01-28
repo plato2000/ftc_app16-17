@@ -5,12 +5,14 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.lasarobotics.vision.opmode.LinearVisionOpMode;
+
 /**
  * Created by Winston on 11/23/16.
  */
 
 @Autonomous(name = "Forward", group = "Forward")
-public class forward extends LinearOpMode{
+public class forward extends LinearVisionOpMode {
 
     final static float PERCENT_MAX_POWER = 0.80f;
     final static float LEFT_FIX = 1.00f;
@@ -23,7 +25,7 @@ public class forward extends LinearOpMode{
 
     public void runOpMode() throws InterruptedException{
 
-        try {
+        //try {
 
 
             motorRight = hardwareMap.dcMotor.get("right");
@@ -70,10 +72,12 @@ public class forward extends LinearOpMode{
             motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
-        } catch (InterruptedException e) {
+        /*} catch (InterruptedException e) {
             return;
-        }
+        }*/
 
     }
+
+
 
 }
