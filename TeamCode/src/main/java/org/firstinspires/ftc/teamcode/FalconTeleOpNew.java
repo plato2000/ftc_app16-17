@@ -6,6 +6,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import org.lasarobotics.vision.android.Cameras;
+import org.lasarobotics.vision.ftc.resq.Beacon;
+import org.lasarobotics.vision.opmode.VisionOpMode;
+import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
+import org.lasarobotics.vision.util.ScreenOrientation;
+import org.opencv.core.Size;
+
 /**
  * Created by Winston on 1/30/16.
  */
@@ -19,12 +26,38 @@ public class FalconTeleOpNew extends OpMode {
      */
     // TETRIX VALUES.
 
-    final static float PERCENT_POWER = 0.20f;
+    float PERCENT_POWER = 0.20f;
 
     final static float LEFT_FIX = 1.0f;
 
+    final static float INTAKE_POWER = -1.0f;
+    final static float OUTPUT_POWER = 1.0f;
+
     DcMotor motorRight;
     DcMotor motorLeft;
+    DcMotor motorFlywheel;
+    DcMotor motorLifter;
+
+    float shootPowLevel=1f;
+    float shootPow=0;
+    float intakePow=0;
+
+    boolean yHeld=false;
+
+    boolean aHeld=false;
+
+    final static int samples = 1;
+
+    final static int threshLR = (int)(samples*.2);
+
+
+    final static double Go_Left = 0.1;
+
+    final static double Go_Right = 0.9;
+
+    long currTime = -1;
+
+    //Servo slider;
 
     /**
      * Constructor
@@ -59,6 +92,72 @@ public class FalconTeleOpNew extends OpMode {
         motorRight = hardwareMap.dcMotor.get("right");
         motorLeft = hardwareMap.dcMotor.get("left");
         motorLeft.setDirection(DcMotor.Direction.REVERSE);
+
+        //slider = hardwareMap.servo.get("slider");
+        motorFlywheel = hardwareMap.dcMotor.get("flywheel");
+        motorLifter = hardwareMap.dcMotor.get("lifter");
+        //waitForVisionStart();
+
+
+        //try{
+        //    Thread.sleep(5000L);
+        //} catch (InterruptedException e) {
+
+        //}
+
+        //float speedStart = 0.6f;
+
+        /**
+         * Set the camera used for detection
+         * PRIMARY = Front-facing, larger camera
+         * SECONDARY = Screen-facing, "selfie" camera :D
+         **/
+        //this.setCamera(Cameras.PRIMARY);
+
+        /**
+         * Set the frame size
+         * Larger = sometimes more accurate, but also much slower
+         * After this method runs, it will set the "width" and "height" of the frame
+         **/
+        //this.setFrameSize(new Size(900, 900));
+
+        /**
+         * Enable extensions. Use what you need.
+         * If you turn on the BEACON extension, it's best to turn on ROTATION too.
+         */
+        //enableExtension(Extensions.BEACON);         //Beacon detection
+        //enableExtension(Extensions.ROTATION);       //Automatic screen rotation correction
+        //enableExtension(Extensions.CAMERA_CONTROL); //Manual camera control
+
+        /**
+         * Set the beacon analysis method
+         * Try them all and see what works!
+         */
+        //beacon.setAnalysisMethod(Beacon.AnalysisMethod.FAST);
+
+        /**
+         * Set color tolerances
+         * 0 is default, -1 is minimum and 1 is maximum tolerance
+         */
+        //beacon.setColorToleranceRed(0);
+        //beacon.setColorToleranceBlue(0);
+
+        //motorRight = hardwareMap.dcMotor.get("right"); //swapped back
+        //motorLeft = hardwareMap.dcMotor.get("left");
+
+
+        //scolF = hardwareMap.colorSensor.get("colorF");
+        //scolB = hardwareMap.colorSensor.get("colorB");
+        //motorRight.setDirection(DcMotor.Direction.REVERSE); //maybe needs to be swapped
+        //rotation.setIsUsingSecondaryCamera(false);
+        //rotation.disableAutoRotate();
+        //rotation.setActivityOrientationFixed(ScreenOrientation.LANDSCAPE);
+        //cameraControl.setColorTemperature(CameraControlExtension.ColorTemperature.AUTO);
+        //cameraControl.setAutoExposureCompensation();
+
+        //slider.setPosition(0.5);
+
+
     }
 
     /*
@@ -85,10 +184,93 @@ public class FalconTeleOpNew extends OpMode {
         float right = throttle - direction;
         float left = throttle + direction;
 
+
+
+        double slidePow=0.5;
+
         if(gamepad1.left_trigger>0.5f){
-            right = -gamepad1.right_stick_y;
-            left = -gamepad1.left_stick_y;
+            PERCENT_POWER=1.0f;
+        }else{
+            PERCENT_POWER=0.3f;
         }
+
+        if(gamepad1.right_trigger>0.5f){
+            intakePow=INTAKE_POWER;
+            System.out.println("hi1");
+        }else{
+            intakePow=0;
+            System.out.println("hi2");
+        }
+
+        if(gamepad1.y && !yHeld && shootPowLevel<1.0f){
+            shootPowLevel+=0.1f;
+            yHeld=true;
+        }else{
+            yHeld=false;
+        }
+
+        if(gamepad1.a && !aHeld && shootPowLevel>0.0f){
+            shootPowLevel-=0.1f;
+            aHeld=true;
+        }else{
+            aHeld=false;
+        }
+
+        /*
+        if(gamepad1.left_bumper){
+            Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
+            int leftc = 0;
+            int rightc = 0;
+            int count = 0;
+            if (analyz.isBeaconFound()) {
+                if (analyz.isRightRed() && analyz.isLeftBlue()) {
+                    leftc++;
+                    count++;
+                } else if (analyz.isLeftRed() && analyz.isRightBlue()) {
+                    rightc++;
+                    count++;
+                }
+                telemetry.addData("left: ", left);
+                telemetry.addData("right: ", right);
+                System.out.println("left data " + left);
+                System.out.println("right data " + right);
+                if (count == samples) {
+                    currTime = System.currentTimeMillis();
+                    if (leftc > rightc) {
+                        slider.setPosition(Go_Left);
+                        //Thread.sleep(slideTime);
+                        //slider.setPosition(0.5);
+                    } else {
+                        slider.setPosition(Go_Right);
+                        //Thread.sleep(slideTime);
+                        //slider.setPosition(0.5);
+                    }
+                }
+            }
+        }
+        if (currTime != -1 && currTime - System.currentTimeMillis() > 5000){
+            slider.setPosition(0.5);
+        }
+        */
+
+        if(gamepad1.b){
+            shootPow=0;
+        }
+
+        if(gamepad1.x){
+            shootPow=shootPowLevel;
+        }
+
+        if(gamepad1.dpad_left){
+            slidePow=Go_Left;
+        }else{
+            slidePow=0;
+        }
+
+        if(gamepad1.dpad_right){
+            slidePow=Go_Right;
+        }else{}
+
         // clip the right/left values so that the values never exceed +/- 1
         right = Range.clip(right, -1, 1);
 
@@ -99,13 +281,11 @@ public class FalconTeleOpNew extends OpMode {
         right = (float)scaleInput(right) * PERCENT_POWER;
         left =  (float)scaleInput(left)  * PERCENT_POWER * LEFT_FIX;
 
-        if(gamepad1.left_bumper){
-            right *=0.2;
-            left *=0.2;
-        }
-
         motorRight.setPower(right);
         motorLeft.setPower(left);
+        motorLifter.setPower(intakePow);
+        motorFlywheel.setPower(shootPow);
+        //slider.setPosition(slidePow);
 
 
 
