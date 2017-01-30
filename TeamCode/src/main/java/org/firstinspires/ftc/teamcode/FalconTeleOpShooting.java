@@ -3,21 +3,13 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
-
-import org.lasarobotics.vision.android.Cameras;
-import org.lasarobotics.vision.ftc.resq.Beacon;
-import org.lasarobotics.vision.opmode.VisionOpMode;
-import org.lasarobotics.vision.opmode.extensions.CameraControlExtension;
-import org.lasarobotics.vision.util.ScreenOrientation;
-import org.opencv.core.Size;
 
 /**
  * Created by Winston on 1/30/16.
  */
-@TeleOp(name="FalconNew", group="FalconNew")
-public class FalconTeleOpNew extends OpMode {
+@TeleOp(name="FalconShoot", group="FalconShoot")
+public class FalconTeleOpShooting extends OpMode {
 
     /*
      * Note: the configuration of the servos is such that
@@ -38,7 +30,7 @@ public class FalconTeleOpNew extends OpMode {
     DcMotor motorFlywheel;
     DcMotor motorLifter;
 
-    float shootPowLevel=-.40f;
+    float shootPowLevel=-.48f;
     float shootPow=0;
     float intakePow=0;
 
@@ -64,7 +56,7 @@ public class FalconTeleOpNew extends OpMode {
     /**
      * Constructor
      */
-    public FalconTeleOpNew() {
+    public FalconTeleOpShooting() {
 
     }
 
@@ -75,22 +67,7 @@ public class FalconTeleOpNew extends OpMode {
      */
     @Override
     public void init() {
-		/*
-		 * Use the hardwareMap to get the dc motors and servos by name. Note
-		 * that the names of the devices must match the names used when you
-		 * configured your robot and created the configuration file.
-		 */
 
-		/*
-		 * For the demo Tetrix K9 bot we assume the following,
-		 *   There are two motors "motor_1" and "motor_2"
-		 *   "motor_1" is on the right side of the bot.
-		 *   "motor_2" is on the left side of the bot.
-		 *
-		 * We also assume that there are two servos "servo_1" and "servo_6"
-		 *    "servo_1" controls the zip joint of the manipulator.
-		 *    "servo_6" controls the dump joint of the manipulator.
-		 */
         motorRight = hardwareMap.dcMotor.get("right");
         motorLeft = hardwareMap.dcMotor.get("left");
         motorLeft.setDirection(DcMotor.Direction.REVERSE);
@@ -99,6 +76,11 @@ public class FalconTeleOpNew extends OpMode {
         motorFlywheel = hardwareMap.dcMotor.get("flywheel");
         motorLifter = hardwareMap.dcMotor.get("lifter");
         //waitForVisionStart();
+        long timer = System.currentTimeMillis();
+
+        while (System.currentTimeMillis() < timer + 5000) {
+            motorFlywheel.setPower(shootPowLevel);
+        }
 
 
         //try{
@@ -183,127 +165,11 @@ public class FalconTeleOpNew extends OpMode {
         // 1 is full down
         // direction: left_stick_x ranges from -1 to 1, where -1 is full left
         // and 1 is full right
-        float throttle = -gamepad1.left_stick_y;
-        float direction = gamepad1.left_stick_x;
-        throttle=throttle*swapped;
-        direction= direction*swapped;
-
-        /*if (!swapbutton && gamepad1.left_bumper){
-            swapped*=-1;
-            swapbutton=true;
-        }else{
-            swapbutton=false;
-        }*/
-
-        float right = throttle - direction;
-        float left = throttle + direction;
 
 
+        motorLifter.setPower(INTAKE_POWER);
 
-        double slidePow=0.5;
 
-        if(gamepad1.left_trigger>0.5f){
-            PERCENT_POWER=1.0f;
-        }else{
-            PERCENT_POWER=0.3f;
-        }
-
-        if(gamepad1.right_trigger>0.5f){
-            intakePow=INTAKE_POWER;
-            System.out.println("hi1");
-        }else{
-            intakePow=0;
-            System.out.println("hi2");
-        }
-
-        /*if(gamepad1.y && !yHeld && shootPowLevel>-.50f){
-            shootPowLevel-=0.1f;
-            yHeld=true;
-        }else{
-            yHeld=false;
-        }
-
-        if(gamepad1.a && !aHeld && shootPowLevel<0.0f){
-            shootPowLevel+=0.1f;
-            aHeld=true;
-        }else{
-            aHeld=false;
-        }*/
-
-        /*
-
-        if(gamepad1.left_bumper){
-            Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
-            int leftc = 0;
-            int rightc = 0;
-            int count = 0;
-            if (analyz.isBeaconFound()) {
-                if (analyz.isRightRed() && analyz.isLeftBlue()) {
-                    leftc++;
-                    count++;
-                } else if (analyz.isLeftRed() && analyz.isRightBlue()) {
-                    rightc++;
-                    count++;
-                }
-
-                telemetry.addData("left: ", left);
-                telemetry.addData("right: ", right);
-                System.out.println("left data " + left);
-                System.out.println("right data " + right);
-                if (count == samples) {
-                    currTime = System.currentTimeMillis();
-                    if (leftc > rightc) {
-                        slider.setPosition(Go_Left);
-                        //Thread.sleep(slideTime);
-                        //slider.setPosition(0.5);
-                    } else {
-                        slider.setPosition(Go_Right);
-                        //Thread.sleep(slideTime);
-                        //slider.setPosition(0.5);
-                    }
-
-                }
-            }
-        }
-
-        if (currTime != -1 && currTime - System.currentTimeMillis() > 5000){
-            slider.setPosition(0.5);
-        }
-
-        */
-
-        if(gamepad1.b){
-            shootPow=0;
-        }
-
-        if(gamepad1.x){
-            shootPow=shootPowLevel;
-        }
-
-        if(gamepad1.dpad_left){
-            slidePow=Go_Left;
-        }else{
-            slidePow=0;
-        }
-
-        if(gamepad1.dpad_right){
-            slidePow=Go_Right;
-        }else{}
-
-        // clip the right/left values so that the values never exceed +/- 1
-        right = Range.clip(right, -1, 1);
-
-        left = Range.clip(left, -1, 1);
-
-        // scale the joystick value to make it easier to control
-        // the robot more precisely at slower speeds.
-        right = (float)scaleInput(right) * PERCENT_POWER;
-        left =  (float)scaleInput(left)  * PERCENT_POWER * LEFT_FIX;
-
-        motorRight.setPower(right);
-        motorLeft.setPower(left);
-        motorLifter.setPower(intakePow);
-        motorFlywheel.setPower(shootPow);
         //slider.setPosition(slidePow);
 
 
@@ -314,9 +180,6 @@ public class FalconTeleOpNew extends OpMode {
 		 * will return a null value. The legacy NXT-compatible motor controllers
 		 * are currently write only.
 		 */
-        telemetry.addData("Text", "*** Robot Data***");
-        telemetry.addData("left tgt pwr",  "left  pwr: " + String.format("%.2f", left));
-        telemetry.addData("right tgt pwr", "right pwr: " + String.format("%.2f", right));
 
     }
 

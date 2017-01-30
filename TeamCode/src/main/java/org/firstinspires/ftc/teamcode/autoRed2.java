@@ -25,6 +25,7 @@ public class autoRed2 extends LinearVisionOpMode{
     final static float LEFT_FIX = 1.0f;
 
     final static int thresh=300;
+    final static float turnFix=2;
 
     DcMotor motorRight;
     DcMotor motorLeft;
@@ -142,7 +143,7 @@ public class autoRed2 extends LinearVisionOpMode{
             motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
             motorRight.setPower(PERCENT_MAX_POWER * speedStart);
 
-            while (motorRight.getCurrentPosition() > -290) {
+            while (motorRight.getCurrentPosition() > -300) {
             }
 
             motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -184,8 +185,8 @@ public class autoRed2 extends LinearVisionOpMode{
             motorLeft.setPower(PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
             motorRight.setPower(PERCENT_MAX_POWER * 0.3);
             Thread.sleep(10);
-            motorLeft.setPower(PERCENT_MAX_POWER * 2 * LEFT_FIX);
-            motorRight.setPower(PERCENT_MAX_POWER * 2);
+            motorLeft.setPower(PERCENT_MAX_POWER * LEFT_FIX);
+            motorRight.setPower(PERCENT_MAX_POWER );
 
             while (colSumF() < thresh) {
             }
@@ -217,17 +218,17 @@ public class autoRed2 extends LinearVisionOpMode{
                             motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
                             motorRight.setPower(PERCENT_MAX_POWER * speedStart);
                         } else {
-                            motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+                            motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX * turnFix);
                             motorRight.setPower(0);
                         }
                     } else {
-                        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+                        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX*turnFix);
                         motorRight.setPower(0);
                         hitWhite = true;
                     }
                 } else {
                     motorLeft.setPower(0);
-                    motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+                    motorRight.setPower(PERCENT_MAX_POWER * speedStart*turnFix);
                     hitWhite = true;
                     measure = true;
                 }
