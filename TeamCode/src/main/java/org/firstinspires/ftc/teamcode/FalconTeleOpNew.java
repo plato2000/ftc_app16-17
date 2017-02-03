@@ -26,7 +26,7 @@ public class FalconTeleOpNew extends OpMode {
      */
     // TETRIX VALUES.
 
-    float PERCENT_POWER = 0.20f;
+    float PERCENT_POWER = 0.30f;
 
     final static float LEFT_FIX = 1.0f;
 
@@ -38,7 +38,7 @@ public class FalconTeleOpNew extends OpMode {
     DcMotor motorFlywheel;
     DcMotor motorLifter;
 
-    float shootPowLevel=-.40f;
+    float shootPowLevel=0.40f;
     float shootPow=0;
     float intakePow=0;
 
@@ -183,7 +183,7 @@ public class FalconTeleOpNew extends OpMode {
         // 1 is full down
         // direction: left_stick_x ranges from -1 to 1, where -1 is full left
         // and 1 is full right
-        float throttle = -gamepad1.left_stick_y;
+        float throttle = gamepad1.left_stick_y;
         float direction = gamepad1.left_stick_x;
         throttle=throttle*swapped;
         direction= direction*swapped;

@@ -16,11 +16,26 @@ public class forward extends LinearVisionOpMode {
 
     final static float PERCENT_MAX_POWER = 0.80f;
     final static float LEFT_FIX = 1.00f;
+
+    long timer;
     DcMotor motorRight;
     DcMotor motorLeft;
 
     public forward(){
 
+    }
+
+    public boolean sleeping(long a) throws InterruptedException {
+        System.out.println("A Value:" + a);
+        long t = System.currentTimeMillis();
+        while (System.currentTimeMillis() - t < a) {
+            System.out.println("LABEL TIMER: "+(System.currentTimeMillis() - timer));
+            if (System.currentTimeMillis() - timer > 10000){
+                return false;
+            }
+            Thread.sleep(1);
+        }
+        return true;
     }
 
     public void runOpMode() throws InterruptedException{
@@ -38,6 +53,19 @@ public class forward extends LinearVisionOpMode {
             //motorRight.setMaxSpeed(800);
 
             waitForStart();
+
+            timer = System.currentTimeMillis();
+
+            System.out.println("Ji");
+
+            if(!(sleeping(50000L))){
+                System.out.println("FALSEISH");
+                return;
+            }
+
+            System.out.println("ended loop");
+
+        /*
 
             float speedStart = 1;
             //motorRight.setTargetPosition(150);
@@ -61,6 +89,8 @@ public class forward extends LinearVisionOpMode {
             }
             */
 
+
+            /*
 
             while (motorRight.getCurrentPosition() > -5000) {
 

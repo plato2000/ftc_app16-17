@@ -53,8 +53,8 @@ public class autoBlue2 extends LinearVisionOpMode{
 
     public boolean sleeping(long a) throws InterruptedException {
         long t = System.currentTimeMillis();
-        while (t - System.currentTimeMillis() > -1 * a) {
-            if (System.currentTimeMillis() - timer < 29500){
+        while (System.currentTimeMillis() - t < a) {
+            if (System.currentTimeMillis() - timer > 10000){
                 return false;
             }
             Thread.sleep(1);
