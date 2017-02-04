@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.lasarobotics.vision.android.Cameras;
@@ -47,6 +46,13 @@ public class autoRed2 extends LinearVisionOpMode{
     Servo slider;
 
     long timer;
+
+    boolean hasShot = false;
+    float shootPowLevel=-.6f;
+    //float shootPowLevel=0.40f;
+
+    DcMotor motorFlywheel;
+    DcMotor motorLifter;
 
     public autoRed2(){
 
@@ -118,6 +124,9 @@ public class autoRed2 extends LinearVisionOpMode{
             cameraControl.setColorTemperature(CameraControlExtension.ColorTemperature.AUTO);
             cameraControl.setAutoExposureCompensation();
 
+            motorFlywheel = hardwareMap.dcMotor.get("flywheel");
+            motorLifter = hardwareMap.dcMotor.get("lifter");
+            motorFlywheel.setDirection(DcMotor.Direction.REVERSE);
             waitForStart();
             timer = System.currentTimeMillis();
             blueLineFollow();
@@ -126,10 +135,8 @@ public class autoRed2 extends LinearVisionOpMode{
 
             /*motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
             motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
             motorLeft.setPower(0);
             motorRight.setPower(0);
             Thread.sleep(10);
@@ -138,7 +145,6 @@ public class autoRed2 extends LinearVisionOpMode{
             Thread.sleep(10);
             motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
             motorRight.setPower(-1*PERCENT_MAX_POWER * speedStart);
-
             while (motorRight.getCurrentPosition() < 3400) {
             }*/
 
@@ -161,7 +167,7 @@ public class autoRed2 extends LinearVisionOpMode{
             motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
             motorRight.setPower(PERCENT_MAX_POWER * speedStart);
 
-            while (motorRight.getCurrentPosition() > -330) {
+            while (motorRight.getCurrentPosition() > -380) {
                 if(!sleeping(1)){
                     return;
                 }
@@ -218,12 +224,17 @@ public class autoRed2 extends LinearVisionOpMode{
                 }
             }
 
-            motorRight.setPower(0);
+            motorRight.setPower(PERCENT_MAX_POWER * speedStart*turnFix);
 
             while (colSumB() < thresh) {
                 if(!sleeping(1)){
                     return;
                 }
+            }
+
+            if (!hasShot){
+
+                motorFlywheel.setPower(shootPowLevel);
             }
 
             Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
@@ -238,7 +249,7 @@ public class autoRed2 extends LinearVisionOpMode{
             long choiceTime = 0;
             long currTime = 0;
             long startTime = System.currentTimeMillis();
-            while (choiceTime == 0 || currTime - choiceTime < 2000) {//for(int i=0;i<100000;i++){
+            while (choiceTime == 0 || currTime - choiceTime < 3000) {//for(int i=0;i<100000;i++){
                 if (colSumF() < thresh) {
                     if (colSumB() < thresh) {
                         if (measure) {
@@ -263,7 +274,7 @@ public class autoRed2 extends LinearVisionOpMode{
                     measure = true;
                 }
                 analyz = beacon.getAnalysis();
-                if (analyz.isBeaconFound() && !hasMoved && currTime - startTime > 2000) {
+                if (analyz.isBeaconFound() && !hasMoved && currTime - startTime > 1000) {
                     if (analyz.isRightBlue() && analyz.isLeftRed()) {
                         left++;
                         count++;
@@ -297,6 +308,7 @@ public class autoRed2 extends LinearVisionOpMode{
                         choiceTime = System.currentTimeMillis();
 
                     }
+
                 }
                 if(!sleeping(1)){
                     return;
@@ -304,7 +316,18 @@ public class autoRed2 extends LinearVisionOpMode{
                 currTime = System.currentTimeMillis();
                 System.out.println("print_" + currTime);
                 System.out.println("print_" + (choiceTime == 0 || currTime - choiceTime < 2000));
+
+
+
+
             }
+
+            if (!hasShot) {
+                hasShot = true;
+                motorLifter.setPower(-1f);
+
+            }
+
             motorLeft.setPower(0);
             //motorRight.setPower(PERCENT_MAX_POWER * 5);
             /*if(!sleeping(500)){
@@ -329,11 +352,15 @@ public class autoRed2 extends LinearVisionOpMode{
             motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
             motorRight.setPower(-1 * PERCENT_MAX_POWER * speedStart);
 
-            while (motorRight.getCurrentPosition() < 3520) {
+
+
+            while (motorRight.getCurrentPosition() < 3020) {
                 if(!sleeping(1)){
                     return;
                 }
             }
+
+
             motorLeft.setPower(0);
             motorRight.setPower(0);
             if(!sleeping(10)){
@@ -352,6 +379,9 @@ public class autoRed2 extends LinearVisionOpMode{
                 }
                 slider.setPosition(0.5);
             }
+
+            motorFlywheel.setPower(0);
+            motorLifter.setPower(0);
         } catch(InterruptedException e){
             return;
         }

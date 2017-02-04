@@ -32,13 +32,14 @@ public class FalconTeleOpNew extends OpMode {
 
     final static float INTAKE_POWER = -1.0f;
     final static float OUTPUT_POWER = 1.0f;
+    boolean swapIntake=false;
 
     DcMotor motorRight;
     DcMotor motorLeft;
     DcMotor motorFlywheel;
     DcMotor motorLifter;
 
-    float shootPowLevel=0.40f;
+    float shootPowLevel=0.6f;
     float shootPow=0;
     float intakePow=0;
 
@@ -202,11 +203,32 @@ public class FalconTeleOpNew extends OpMode {
 
         double slidePow=0.5;
 
-        if(gamepad1.left_trigger>0.5f){
+
+
+        if(gamepad1.left_bumper){
             PERCENT_POWER=1.0f;
         }else{
             PERCENT_POWER=0.3f;
         }
+
+
+
+        if(gamepad1.right_trigger>0.5f){
+            intakePow=INTAKE_POWER;
+            System.out.println("hi1");
+        }else{
+            intakePow=0;
+            System.out.println("hi2");
+        }
+
+        if(gamepad1.left_trigger>0.5f){
+            intakePow=-1*INTAKE_POWER;
+            System.out.println("hi1");
+        }else{
+            intakePow=0;
+            System.out.println("hi2");
+        }
+
 
         if(gamepad1.right_trigger>0.5f){
             intakePow=INTAKE_POWER;
@@ -289,6 +311,8 @@ public class FalconTeleOpNew extends OpMode {
         if(gamepad1.dpad_right){
             slidePow=Go_Right;
         }else{}
+
+
 
         // clip the right/left values so that the values never exceed +/- 1
         right = Range.clip(right, -1, 1);

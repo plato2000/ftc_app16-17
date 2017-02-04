@@ -36,7 +36,7 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
     DcMotor motorFlywheel;
     DcMotor motorLifter;
 
-    float shootPowLevel=-.48f;
+    float shootPowLevel=-.6f;
     float shootPow=0;
     float intakePow=0;
 
@@ -45,13 +45,13 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
     boolean aHeld=false;
 
     long currTime = -1;
-    final static float PERCENT_MAX_POWER = 0.3f;
+    final static float PERCENT_MAX_POWER = 0.21f;
 
     final static float LEFT_FIX = 1.0f;
     float speedStart = 0.6f;
 
     final static int thresh=300;
-    final static float turnFix=-0.2f;
+    final static float turnFix=-0.7f;
 
     DcMotor motorRight;
     DcMotor motorLeft;
@@ -139,6 +139,7 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
             cameraControl.setAutoExposureCompensation();
             motorFlywheel = hardwareMap.dcMotor.get("flywheel");
             motorLifter = hardwareMap.dcMotor.get("lifter");
+            motorFlywheel.setDirection(DcMotor.Direction.REVERSE);
 
 
 
@@ -147,6 +148,36 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
 
 
             timer = System.currentTimeMillis();
+
+
+
+
+            timer = System.currentTimeMillis();
+            blueLineFollow();
+
+           /* motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX*-1*2);
+            motorRight.setPower(PERCENT_MAX_POWER * speedStart * -1*2);
+
+            if(!sleeping(250)){
+                return;
+            };
+
+            motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX*5);
+            motorRight.setPower(PERCENT_MAX_POWER * speedStart * 5);
+
+            if(!sleeping(1000)){
+                return;
+            };
+
+            */
+
+            motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX*-1*2);
+            motorRight.setPower(PERCENT_MAX_POWER * speedStart*-1*2);
+            if(!sleeping(1000)){
+                return;
+            };
+            motorLeft.setPower(0);
+            motorRight.setPower(0);
 
             motorFlywheel.setPower(shootPowLevel);
             if(!sleeping(5000)){
@@ -164,8 +195,6 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
             motorFlywheel.setPower(0);
 
 
-            timer = System.currentTimeMillis();
-            blueLineFollow();
 
             //For the second beacon
 
@@ -236,7 +265,7 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
             long choiceTime = 0;
             long currTime = 0;
             long startTime = System.currentTimeMillis();
-            while (choiceTime == 0 || currTime - choiceTime < 2000) {//for(int i=0;i<100000;i++){
+            while (choiceTime == 0 || currTime - choiceTime < 5500) {//for(int i=0;i<100000;i++){
                 if (colSumF() < thresh) {
                     if (colSumB() < thresh) {
                         if (measure) {
@@ -308,48 +337,7 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
             /*if(!sleeping(500)){
                 return;
             }*/
-            motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-            motorLeft.setPower(0);
-            motorRight.setPower(0);
-            if (!sleeping(10)) {
-                return;
-            }
-            motorLeft.setPower(-1 * PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
-            motorRight.setPower(-1 * PERCENT_MAX_POWER * 0.3);
-            if (!sleeping(10)) {
-                return;
-            }
-            motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-            motorRight.setPower(-1 * PERCENT_MAX_POWER * speedStart);
-
-            while (motorRight.getCurrentPosition() < 3520) {
-                if (!sleeping(1)) {
-                    return;
-                }
-            }
-            motorLeft.setPower(0);
-            motorRight.setPower(0);
-            if (!sleeping(10)) {
-                return;
-            }
-            if (right - left > threshLR) {
-                slider.setPosition(Go_Left);
-                if (!sleeping(slideTime)) {
-                    return;
-                }
-                slider.setPosition(0.5);
-            } else {
-                slider.setPosition(Go_Right);
-                if (!sleeping(slideTime)) {
-                    return;
-                }
-                slider.setPosition(0.5);
-            }
         } catch (InterruptedException e) {
             return;
         }

@@ -47,6 +47,13 @@ public class autoBlue2 extends LinearVisionOpMode{
 
     long timer;
 
+    boolean hasShot = false;
+    //float shootPowLevel=0.40f;
+    float shootPowLevel=-.6f;
+
+    DcMotor motorFlywheel;
+    DcMotor motorLifter;
+
     public autoBlue2(){
 
     }
@@ -116,6 +123,9 @@ public class autoBlue2 extends LinearVisionOpMode{
             rotation.setActivityOrientationFixed(ScreenOrientation.LANDSCAPE);
             cameraControl.setColorTemperature(CameraControlExtension.ColorTemperature.AUTO);
             cameraControl.setAutoExposureCompensation();
+
+            motorFlywheel = hardwareMap.dcMotor.get("flywheel");
+            motorLifter = hardwareMap.dcMotor.get("lifter");
 
             waitForStart();
             timer = System.currentTimeMillis();
@@ -227,6 +237,11 @@ public class autoBlue2 extends LinearVisionOpMode{
                 if(!sleeping(1)){
                     return;
                 }
+            }
+
+            if (!hasShot){
+
+                motorFlywheel.setPower(shootPowLevel);
             }
 
             Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
@@ -343,6 +358,11 @@ public class autoBlue2 extends LinearVisionOpMode{
                     return;
                 }
             }
+
+            if (!hasShot){
+                hasShot = true;
+                motorLifter.setPower(-1f);
+            }
             motorLeft.setPower(0);
             motorRight.setPower(0);
             if(!sleeping(10)){
@@ -364,6 +384,9 @@ public class autoBlue2 extends LinearVisionOpMode{
                 //Thread.sleep(slideTime);
                 slider.setPosition(0.5);
             }
+
+            motorFlywheel.setPower(0);
+            motorLifter.setPower(0);
         } catch(InterruptedException e){
             return;
         }

@@ -30,7 +30,7 @@ public class autoShooting2 extends LinearVisionOpMode{
     DcMotor motorFlywheel;
     DcMotor motorLifter;
 
-    float shootPowLevel=-.48f;
+    float shootPowLevel=-.6f;
     float shootPow=0;
     float intakePow=0;
 
@@ -81,10 +81,18 @@ public class autoShooting2 extends LinearVisionOpMode{
         motorLeft.setDirection(DcMotor.Direction.REVERSE);
         motorFlywheel = hardwareMap.dcMotor.get("flywheel");
         motorLifter = hardwareMap.dcMotor.get("lifter");
+        motorFlywheel.setDirection(DcMotor.Direction.REVERSE);
         waitForStart();
 
         System.out.println("Past start");
         long timer = System.currentTimeMillis();
+        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+        if(!sleeping(1000)){
+            return;
+        };
+        motorLeft.setPower(0);
+        motorRight.setPower(0);
 
         motorFlywheel.setPower(shootPowLevel);
         if(!sleeping(5000)){
@@ -104,7 +112,7 @@ public class autoShooting2 extends LinearVisionOpMode{
 
         motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
         motorRight.setPower(PERCENT_MAX_POWER * speedStart);
-        if(!sleeping(3000)){
+        if(!sleeping(2000)){
             return;
         };
         motorLeft.setPower(0);
