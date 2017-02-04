@@ -126,21 +126,20 @@ public class autoBlueOneBeacon extends LinearVisionOpMode {
 
             waitForStart();
 
-            long timer = System.currentTimeMillis();
+            timer = System.currentTimeMillis();
 
-            while (System.currentTimeMillis() < timer + 5000) {
-                motorFlywheel.setPower(shootPowLevel);
+            motorFlywheel.setPower(shootPowLevel);
+            if(!sleeping(5000)){
+                return;
             }
 
             motorLifter.setPower(INTAKE_POWER);
             timer = System.currentTimeMillis();
 
-            while (System.currentTimeMillis() < timer + 10000) {
-                System.out.println("Into Loop");
-                Thread.sleep(1);
+            if(!sleeping(10000)){
+                return;
+            };
 
-
-            }
             motorLifter.setPower(0);
             motorFlywheel.setPower(0);
 
