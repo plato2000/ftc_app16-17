@@ -49,7 +49,7 @@ public class autoShooting2 extends LinearVisionOpMode{
     DcMotor motorRight;
     DcMotor motorLeft;
 
-
+    long timer;
     final static int samples = 100;
 
     final static int threshLR = (int)(samples*.2);
@@ -63,6 +63,17 @@ public class autoShooting2 extends LinearVisionOpMode{
 
     Servo slider;
 
+    public boolean sleeping(long a) throws InterruptedException {
+        long t = System.currentTimeMillis();
+        while (System.currentTimeMillis() - t < a) {
+            if (System.currentTimeMillis() - timer > 29800){
+                return false;
+            }
+            Thread.sleep(1);
+        }
+        return true;
+    }
+
     public void runOpMode() throws InterruptedException {
         System.out.println("Into opmode");
         motorRight = hardwareMap.dcMotor.get("right");
@@ -75,27 +86,27 @@ public class autoShooting2 extends LinearVisionOpMode{
         System.out.println("Past start");
         long timer = System.currentTimeMillis();
 
-        while (System.currentTimeMillis() < timer + 5000) {
-            motorFlywheel.setPower(shootPowLevel);
+        motorFlywheel.setPower(shootPowLevel);
+        if(!sleeping(5000)){
+            return;
         }
 
         motorLifter.setPower(INTAKE_POWER);
         timer = System.currentTimeMillis();
 
-        while (System.currentTimeMillis() < timer + 10000) {
-            System.out.println("Into Loop");
-            Thread.sleep(1);
+        if(!sleeping(10000)){
+            return;
+        };
 
-
-        }
         motorLifter.setPower(0);
         motorFlywheel.setPower(0);
 
-        timer = System.currentTimeMillis();
-        while (System.currentTimeMillis() < timer + 3000) {
-            motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-            motorRight.setPower(PERCENT_MAX_POWER * speedStart);
-        }
+
+        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+        if(!sleeping(3000)){
+            return;
+        };
         motorLeft.setPower(0);
         motorRight.setPower(0);
 
