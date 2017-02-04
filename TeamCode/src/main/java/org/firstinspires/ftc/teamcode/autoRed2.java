@@ -318,7 +318,7 @@ public class autoRed2 extends LinearVisionOpMode{
 
             motorLeft.setPower(0);
             motorRight.setPower(0);
-            if(!sleeping(10)){
+            if (!sleeping(10)){
                 return;
             }
             motorLeft.setPower(-1 * PERCENT_MAX_POWER * 0.3 * LEFT_FIX);

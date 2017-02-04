@@ -71,6 +71,7 @@ public class autoShooting2 extends LinearVisionOpMode{
         motorFlywheel = hardwareMap.dcMotor.get("flywheel");
         motorLifter = hardwareMap.dcMotor.get("lifter");
         waitForStart();
+
         System.out.println("Past start");
         long timer = System.currentTimeMillis();
 

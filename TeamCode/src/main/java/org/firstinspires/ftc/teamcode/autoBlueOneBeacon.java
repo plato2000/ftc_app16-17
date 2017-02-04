@@ -16,50 +16,25 @@ import org.opencv.core.Size;
  * Created by Winston on 11/23/16.
  */
 
-@Autonomous(name = "AutoRedOneBeacon", group = "AutoRedOneBeacon")
-public class autoRedOneBeacon extends LinearVisionOpMode {
+@Autonomous(name = "AutoBlueOneBeacon", group = "AutoBlueOneBeacon")
+public class autoBlueOneBeacon extends LinearVisionOpMode {
 
-
-    ColorSensor scolF;
-    ColorSensor scolB;
-
-
-    Servo slider;
-
-    long timer;
-    float PERCENT_POWER = 0.20f;
-
-
-    final static float INTAKE_POWER = -1.0f;
-    final static float OUTPUT_POWER = .8f;
-
-    DcMotor motorFlywheel;
-    DcMotor motorLifter;
-
-    float shootPowLevel=-.48f;
-    float shootPow=0;
-    float intakePow=0;
-
-    boolean yHeld=false;
-
-    boolean aHeld=false;
-
-    long currTime = -1;
-    final static float PERCENT_MAX_POWER = 0.3f;
+    final static float PERCENT_MAX_POWER = 0.26f;
 
     final static float LEFT_FIX = 1.0f;
-    float speedStart = 0.6f;
 
     final static int thresh=300;
-    final static float turnFix=-0.2f;
+    final static float turnFix=0f;
 
     DcMotor motorRight;
     DcMotor motorLeft;
 
+    ColorSensor scolF;
+    ColorSensor scolB;
 
     final static int samples = 100;
 
-    final static int threshLR = (int)(samples*.2);
+    final static int threshLR = (int)(samples*.2);;
 
 
     final static double Go_Left = 0.1;
@@ -68,14 +43,22 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
 
     final static long slideTime = 750;
 
-    public autoRedOneBeacon() {
+    Servo slider;
+
+    long timer;
+    final static float INTAKE_POWER = -1.0f;
+    DcMotor motorFlywheel;
+    DcMotor motorLifter;
+    float shootPowLevel=-.48f;
+
+    public autoBlueOneBeacon(){
 
     }
 
     public boolean sleeping(long a) throws InterruptedException {
         long t = System.currentTimeMillis();
         while (System.currentTimeMillis() - t < a) {
-            if (System.currentTimeMillis() - timer > 29800) {
+            if (System.currentTimeMillis() - timer > 29800){
                 return false;
             }
             Thread.sleep(1);
@@ -125,13 +108,13 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
             beacon.setColorToleranceRed(0);
             beacon.setColorToleranceBlue(0);
 
-            motorRight = hardwareMap.dcMotor.get("left"); //swapped
-            motorLeft = hardwareMap.dcMotor.get("right");
+            motorRight = hardwareMap.dcMotor.get("right"); //swapped back
+            motorLeft = hardwareMap.dcMotor.get("left");
 
 
             scolF = hardwareMap.colorSensor.get("colorF");
             scolB = hardwareMap.colorSensor.get("colorB");
-            motorRight.setDirection(DcMotor.Direction.REVERSE);
+            motorLeft.setDirection(DcMotor.Direction.REVERSE); //maybe needs to be swapped
             rotation.setIsUsingSecondaryCamera(false);
             rotation.disableAutoRotate();
             rotation.setActivityOrientationFixed(ScreenOrientation.LANDSCAPE);
@@ -139,8 +122,6 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
             cameraControl.setAutoExposureCompensation();
             motorFlywheel = hardwareMap.dcMotor.get("flywheel");
             motorLifter = hardwareMap.dcMotor.get("lifter");
-
-
 
 
             waitForStart();
@@ -168,25 +149,7 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
             blueLineFollow();
 
             //For the second beacon
-
-            /*motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-            motorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            motorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-            motorLeft.setPower(0);
-            motorRight.setPower(0);
-            Thread.sleep(10);
-            motorLeft.setPower(-1*PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
-            motorRight.setPower(-1*PERCENT_MAX_POWER * 0.3);
-            Thread.sleep(10);
-            motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-            motorRight.setPower(-1*PERCENT_MAX_POWER * speedStart);
-
-            while (motorRight.getCurrentPosition() < 3400) {
-            }*/
-        } catch (InterruptedException ie) {
+        }catch(InterruptedException ie){
             return;
         }
 
@@ -199,19 +162,21 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
             float speedStart = 0.6f;
             motorLeft.setPower(0);
             motorRight.setPower(0);
-            if (!sleeping(10)) {
+            if(!sleeping(10)){
                 return;
             }
+            //Thread.sleep(10);
             motorLeft.setPower(PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
             motorRight.setPower(PERCENT_MAX_POWER * 0.3);
-            if (!sleeping(10)) {
+            if(!sleeping(10)){
                 return;
             }
+            //Thread.sleep(10);
             motorLeft.setPower(PERCENT_MAX_POWER * LEFT_FIX);
             motorRight.setPower(PERCENT_MAX_POWER);
 
             while (colSumF() < thresh) {
-                if (!sleeping(1)) {
+                if(!sleeping(1)){
                     return;
                 }
             }
@@ -219,7 +184,7 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
             motorRight.setPower(0);
 
             while (colSumB() < thresh) {
-                if (!sleeping(1)) {
+                if(!sleeping(1)){
                     return;
                 }
             }
@@ -246,12 +211,12 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
                             motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
                             motorRight.setPower(PERCENT_MAX_POWER * speedStart);
                         } else {
-                            motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-                            motorRight.setPower(PERCENT_MAX_POWER * speedStart * turnFix);
+                            motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX );
+                            motorRight.setPower(PERCENT_MAX_POWER * speedStart* turnFix);
                         }
                     } else {
-                        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
-                        motorRight.setPower(PERCENT_MAX_POWER * speedStart * turnFix);
+                        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX );
+                        motorRight.setPower(PERCENT_MAX_POWER * speedStart* turnFix);
                         hitWhite = true;
                     }
                 } else {
@@ -262,10 +227,10 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
                 }
                 analyz = beacon.getAnalysis();
                 if (analyz.isBeaconFound() && !hasMoved && currTime - startTime > 2000) {
-                    if (analyz.isRightBlue() && analyz.isLeftRed()) {
+                    if (analyz.isRightRed() && analyz.isLeftBlue()) {
                         left++;
                         count++;
-                    } else if (analyz.isLeftBlue() && analyz.isRightRed()) {
+                    } else if (analyz.isLeftRed() && analyz.isRightBlue()) {
                         right++;
                         count++;
                     }
@@ -279,15 +244,17 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
                         motorRight.setPower(0);
                         if (right - left < threshLR) {
                             slider.setPosition(Go_Left);
-                            if (!sleeping(slideTime)) {
+                            if(!sleeping(slideTime)){
                                 return;
                             }
+                            //Thread.sleep(slideTime);
                             slider.setPosition(0.5);
                         } else {
                             slider.setPosition(Go_Right);
-                            if (!sleeping(slideTime)) {
+                            if(!sleeping(slideTime)){
                                 return;
                             }
+                            //Thread.sleep(slideTime);
                             slider.setPosition(0.5);
                         }
                         hasMoved = true;
@@ -296,9 +263,10 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
 
                     }
                 }
-                if (!sleeping(1)) {
+                if(!sleeping(1)){
                     return;
                 }
+                //Thread.sleep(1);
                 currTime = System.currentTimeMillis();
                 System.out.println("print_" + currTime);
                 System.out.println("print_" + (choiceTime == 0 || currTime - choiceTime < 2000));
@@ -308,6 +276,7 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
             /*if(!sleeping(500)){
                 return;
             }*/
+            //Thread.sleep(500);
             motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -316,41 +285,46 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
 
             motorLeft.setPower(0);
             motorRight.setPower(0);
-            if (!sleeping(10)) {
+            if(!sleeping(10)){
                 return;
             }
+            //Thread.sleep(10);
             motorLeft.setPower(-1 * PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
             motorRight.setPower(-1 * PERCENT_MAX_POWER * 0.3);
-            if (!sleeping(10)) {
+            if(!sleeping(10)){
                 return;
             }
+            //Thread.sleep(10);
             motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
             motorRight.setPower(-1 * PERCENT_MAX_POWER * speedStart);
 
             while (motorRight.getCurrentPosition() < 3520) {
-                if (!sleeping(1)) {
+                if(!sleeping(1)){
                     return;
                 }
             }
             motorLeft.setPower(0);
             motorRight.setPower(0);
-            if (!sleeping(10)) {
+            if(!sleeping(10)){
                 return;
             }
+            //Thread.sleep(10);
             if (right - left > threshLR) {
                 slider.setPosition(Go_Left);
-                if (!sleeping(slideTime)) {
+                if(!sleeping(slideTime)){
                     return;
                 }
+                //Thread.sleep(slideTime);
                 slider.setPosition(0.5);
             } else {
                 slider.setPosition(Go_Right);
-                if (!sleeping(slideTime)) {
+                if(!sleeping(slideTime)){
                     return;
                 }
+                //Thread.sleep(slideTime);
                 slider.setPosition(0.5);
             }
-        } catch (InterruptedException e) {
+        } catch(InterruptedException e){
             return;
         }
     }
@@ -366,6 +340,5 @@ public class autoRedOneBeacon extends LinearVisionOpMode {
         //telemetry.addData("colB",colTot);
         return colTot;
     }
-
 
 }
