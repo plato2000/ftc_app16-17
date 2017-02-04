@@ -19,12 +19,12 @@ import org.opencv.core.Size;
 @Autonomous(name = "AutoBlue2", group = "AutoBlue2")
 public class autoBlue2 extends LinearVisionOpMode{
 
-    final static float PERCENT_MAX_POWER = 0.20f;
+    final static float PERCENT_MAX_POWER = 0.26f;
 
     final static float LEFT_FIX = 1.0f;
 
     final static int thresh=300;
-    final static float turnFix=2;
+    final static float turnFix=0f;
 
     DcMotor motorRight;
     DcMotor motorLeft;
@@ -34,7 +34,7 @@ public class autoBlue2 extends LinearVisionOpMode{
 
     final static int samples = 100;
 
-    final static int threshLR = (int)(samples*.2);
+    final static int threshLR = (int)(samples*.2);;
 
 
     final static double Go_Left = 0.1;
@@ -54,7 +54,7 @@ public class autoBlue2 extends LinearVisionOpMode{
     public boolean sleeping(long a) throws InterruptedException {
         long t = System.currentTimeMillis();
         while (System.currentTimeMillis() - t < a) {
-            if (System.currentTimeMillis() - timer > 10000){
+            if (System.currentTimeMillis() - timer > 29800){
                 return false;
             }
             Thread.sleep(1);
@@ -155,13 +155,17 @@ public class autoBlue2 extends LinearVisionOpMode{
             //Thread.sleep(10);
             motorLeft.setPower(-1*PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
             motorRight.setPower(PERCENT_MAX_POWER * 0.3);
-            if(!sleeping(1)){
+            if(!sleeping(10)){
                 return;
             }
             motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
             motorRight.setPower(PERCENT_MAX_POWER * speedStart);
 
-            while (motorRight.getCurrentPosition() > -290) {
+            while (motorLeft.getCurrentPosition() < 410) {
+                System.out.println("TurnBlue"+ motorLeft.getCurrentPosition());
+                if(!sleeping(1)){
+                    return;
+                }
             }
 
             motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -185,10 +189,6 @@ public class autoBlue2 extends LinearVisionOpMode{
 
 
             blueLineFollow();
-            if(!sleeping(1000)){
-                return;
-            }
-            //Thread.sleep(1000);
         }catch(InterruptedException ie){
             return;
         }
@@ -216,11 +216,17 @@ public class autoBlue2 extends LinearVisionOpMode{
             motorRight.setPower(PERCENT_MAX_POWER);
 
             while (colSumF() < thresh) {
+                if(!sleeping(1)){
+                    return;
+                }
             }
 
             motorRight.setPower(0);
 
             while (colSumB() < thresh) {
+                if(!sleeping(1)){
+                    return;
+                }
             }
 
             Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
@@ -245,17 +251,17 @@ public class autoBlue2 extends LinearVisionOpMode{
                             motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
                             motorRight.setPower(PERCENT_MAX_POWER * speedStart);
                         } else {
-                            motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX * turnFix);
-                            motorRight.setPower(0);
+                            motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX );
+                            motorRight.setPower(PERCENT_MAX_POWER * speedStart* turnFix);
                         }
                     } else {
-                        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX * turnFix);
-                        motorRight.setPower(0);
+                        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX );
+                        motorRight.setPower(PERCENT_MAX_POWER * speedStart* turnFix);
                         hitWhite = true;
                     }
                 } else {
-                    motorLeft.setPower(0);
-                    motorRight.setPower(PERCENT_MAX_POWER * speedStart * turnFix);
+                    motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX * turnFix);
+                    motorRight.setPower(PERCENT_MAX_POWER * speedStart);
                     hitWhite = true;
                     measure = true;
                 }
@@ -305,15 +311,11 @@ public class autoBlue2 extends LinearVisionOpMode{
                 System.out.println("print_" + currTime);
                 System.out.println("print_" + (choiceTime == 0 || currTime - choiceTime < 2000));
             }
-
-            System.out.println("print_1");
             motorLeft.setPower(0);
-            System.out.println("print_1.5");
-            motorRight.setPower(PERCENT_MAX_POWER * 5);
-            System.out.println("print_2");
-            if(!sleeping(500)){
+            //motorRight.setPower(PERCENT_MAX_POWER * 5);
+            /*if(!sleeping(500)){
                 return;
-            }
+            }*/
             //Thread.sleep(500);
             motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -336,7 +338,10 @@ public class autoBlue2 extends LinearVisionOpMode{
             motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
             motorRight.setPower(-1 * PERCENT_MAX_POWER * speedStart);
 
-            while (motorRight.getCurrentPosition() < 4400) {
+            while (motorRight.getCurrentPosition() < 3520) {
+                if(!sleeping(1)){
+                    return;
+                }
             }
             motorLeft.setPower(0);
             motorRight.setPower(0);

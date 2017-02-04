@@ -20,12 +20,12 @@ import org.opencv.core.Size;
 @Autonomous(name = "AutoRed2", group = "AutoRed2")
 public class autoRed2 extends LinearVisionOpMode{
 
-    final static float PERCENT_MAX_POWER = 0.20f;
+    final static float PERCENT_MAX_POWER = 0.3f;
 
     final static float LEFT_FIX = 1.0f;
 
     final static int thresh=300;
-    final static float turnFix=2;
+    final static float turnFix=-0.2f;
 
     DcMotor motorRight;
     DcMotor motorLeft;
@@ -46,8 +46,21 @@ public class autoRed2 extends LinearVisionOpMode{
 
     Servo slider;
 
+    long timer;
+
     public autoRed2(){
 
+    }
+
+    public boolean sleeping(long a) throws InterruptedException {
+        long t = System.currentTimeMillis();
+        while (System.currentTimeMillis() - t < a) {
+            if (System.currentTimeMillis() - timer > 29800){
+                return false;
+            }
+            Thread.sleep(1);
+        }
+        return true;
     }
 
     public void runOpMode() {
@@ -106,6 +119,7 @@ public class autoRed2 extends LinearVisionOpMode{
             cameraControl.setAutoExposureCompensation();
 
             waitForStart();
+            timer = System.currentTimeMillis();
             blueLineFollow();
 
             //For the second beacon
@@ -136,14 +150,21 @@ public class autoRed2 extends LinearVisionOpMode{
 
             motorLeft.setPower(0);
             motorRight.setPower(0);
-            Thread.sleep(10);
+            if(!sleeping(10)){
+                return;
+            }
             motorLeft.setPower(-1*PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
             motorRight.setPower(PERCENT_MAX_POWER * 0.3);
-            Thread.sleep(1);
+            if(!sleeping(10)){
+                return;
+            }
             motorLeft.setPower(-1*PERCENT_MAX_POWER * speedStart * LEFT_FIX);
             motorRight.setPower(PERCENT_MAX_POWER * speedStart);
 
-            while (motorRight.getCurrentPosition() > -300) {
+            while (motorRight.getCurrentPosition() > -330) {
+                if(!sleeping(1)){
+                    return;
+                }
             }
 
             motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -167,7 +188,6 @@ public class autoRed2 extends LinearVisionOpMode{
 
 
             blueLineFollow();
-            Thread.sleep(1000);
         }catch(InterruptedException ie){
             return;
         }
@@ -181,19 +201,29 @@ public class autoRed2 extends LinearVisionOpMode{
             float speedStart = 0.6f;
             motorLeft.setPower(0);
             motorRight.setPower(0);
-            Thread.sleep(10);
+            if(!sleeping(10)){
+                return;
+            }
             motorLeft.setPower(PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
             motorRight.setPower(PERCENT_MAX_POWER * 0.3);
-            Thread.sleep(10);
+            if(!sleeping(10)){
+                return;
+            }
             motorLeft.setPower(PERCENT_MAX_POWER * LEFT_FIX);
             motorRight.setPower(PERCENT_MAX_POWER );
 
             while (colSumF() < thresh) {
+                if(!sleeping(1)){
+                    return;
+                }
             }
 
             motorRight.setPower(0);
 
             while (colSumB() < thresh) {
+                if(!sleeping(1)){
+                    return;
+                }
             }
 
             Beacon.BeaconAnalysis analyz = beacon.getAnalysis();
@@ -218,17 +248,17 @@ public class autoRed2 extends LinearVisionOpMode{
                             motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
                             motorRight.setPower(PERCENT_MAX_POWER * speedStart);
                         } else {
-                            motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX * turnFix);
-                            motorRight.setPower(0);
+                            motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+                            motorRight.setPower(PERCENT_MAX_POWER * speedStart*turnFix);
                         }
                     } else {
-                        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX*turnFix);
-                        motorRight.setPower(0);
+                        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+                        motorRight.setPower(PERCENT_MAX_POWER * speedStart*turnFix);
                         hitWhite = true;
                     }
                 } else {
-                    motorLeft.setPower(0);
-                    motorRight.setPower(PERCENT_MAX_POWER * speedStart*turnFix);
+                    motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX*turnFix);
+                    motorRight.setPower(PERCENT_MAX_POWER * speedStart);
                     hitWhite = true;
                     measure = true;
                 }
@@ -251,11 +281,15 @@ public class autoRed2 extends LinearVisionOpMode{
                         motorRight.setPower(0);
                         if (right - left < threshLR) {
                             slider.setPosition(Go_Left);
-                            Thread.sleep(slideTime);
+                            if(!sleeping(slideTime)){
+                                return;
+                            }
                             slider.setPosition(0.5);
                         } else {
                             slider.setPosition(Go_Right);
-                            Thread.sleep(slideTime);
+                            if(!sleeping(slideTime)){
+                                return;
+                            }
                             slider.setPosition(0.5);
                         }
                         hasMoved = true;
@@ -264,18 +298,18 @@ public class autoRed2 extends LinearVisionOpMode{
 
                     }
                 }
-                Thread.sleep(1);
+                if(!sleeping(1)){
+                    return;
+                }
                 currTime = System.currentTimeMillis();
                 System.out.println("print_" + currTime);
                 System.out.println("print_" + (choiceTime == 0 || currTime - choiceTime < 2000));
             }
-
-            System.out.println("print_1");
             motorLeft.setPower(0);
-            System.out.println("print_1.5");
-            motorRight.setPower(PERCENT_MAX_POWER * 5);
-            System.out.println("print_2");
-            Thread.sleep(500);
+            //motorRight.setPower(PERCENT_MAX_POWER * 5);
+            /*if(!sleeping(500)){
+                return;
+            }*/
             motorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -284,25 +318,38 @@ public class autoRed2 extends LinearVisionOpMode{
 
             motorLeft.setPower(0);
             motorRight.setPower(0);
-            Thread.sleep(10);
+            if(!sleeping(10)){
+                return;
+            }
             motorLeft.setPower(-1 * PERCENT_MAX_POWER * 0.3 * LEFT_FIX);
             motorRight.setPower(-1 * PERCENT_MAX_POWER * 0.3);
-            Thread.sleep(10);
+            if(!sleeping(10)){
+                return;
+            }
             motorLeft.setPower(-1 * PERCENT_MAX_POWER * speedStart * LEFT_FIX);
             motorRight.setPower(-1 * PERCENT_MAX_POWER * speedStart);
 
-            while (motorRight.getCurrentPosition() < 4400) {
+            while (motorRight.getCurrentPosition() < 3520) {
+                if(!sleeping(1)){
+                    return;
+                }
             }
             motorLeft.setPower(0);
             motorRight.setPower(0);
-            Thread.sleep(10);
+            if(!sleeping(10)){
+                return;
+            }
             if (right - left > threshLR) {
                 slider.setPosition(Go_Left);
-                Thread.sleep(slideTime);
+                if(!sleeping(slideTime)) {
+                    return;
+                }
                 slider.setPosition(0.5);
             } else {
                 slider.setPosition(Go_Right);
-                Thread.sleep(slideTime);
+                if(!sleeping(slideTime)){
+                    return;
+                }
                 slider.setPosition(0.5);
             }
         } catch(InterruptedException e){
