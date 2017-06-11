@@ -3,6 +3,8 @@ package org.firstinspires.ftc.team9450.subsystems;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.team9450.util.Constants;
 import org.firstinspires.ftc.team9450.util.DriveSignal;
 import org.firstinspires.ftc.team9450.util.Util;
 
@@ -25,17 +27,22 @@ public class Drivetrain extends Subsystem {
     public Drivetrain(DcMotor left, DcMotor right) {
         this.left = left;
         this.right = right;
-        maxPower = .7f;
+        maxPower = Constants.Drivetrain.HIGH_POWER;
     }
 
     public void setMaxPower(float maxPower) {
-        this.maxPower = (float) Util.limit(maxPower, 1);
+        this.maxPower = maxPower;
+        System.out.println("max power: " + maxPower);
+    }
+
+    public float getMaxPower() {
+        return this.maxPower;
     }
 
     public void setOpenLoop(DriveSignal signal) {
         controlState = DriveControlState.OPEN_LOOP;
-        left.setPower(-signal.leftMotor * maxPower);
-        right.setPower(signal.rightMotor * maxPower);
+        left.setPower(signal.rightMotor * maxPower);
+        right.setPower(-signal.leftMotor * maxPower);
     }
 
     @Override
@@ -51,6 +58,7 @@ public class Drivetrain extends Subsystem {
     public void loop() {
         switch(controlState) {
             case OPEN_LOOP:
+                break;
             default:
                 setOpenLoop(DriveSignal.NEUTRAL);
                 break;

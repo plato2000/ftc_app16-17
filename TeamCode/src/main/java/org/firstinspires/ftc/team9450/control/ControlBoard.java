@@ -41,7 +41,7 @@ public class ControlBoard {
     }
 
     public float turn() {
-        return driverController.left_stick_x;
+        return driverController.right_stick_x;
     }
 
     public boolean toggleShooterOn() {

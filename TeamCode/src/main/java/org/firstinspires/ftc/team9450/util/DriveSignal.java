@@ -20,7 +20,7 @@ public class DriveSignal {
     }
 
     public static DriveSignal NEUTRAL = new DriveSignal(0, 0);
-    public static DriveSignal BREAK = new DriveSignal(0, 0, true);
+    public static DriveSignal BRAKE = new DriveSignal(0, 0, true);
 
     @Override
     public String toString() {

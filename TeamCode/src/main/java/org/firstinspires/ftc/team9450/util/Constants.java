@@ -9,7 +9,8 @@ public class Constants {
     }
 
     public class Drivetrain {
-
+        public static final float HIGH_POWER = 1.0f;
+        public static final float LOW_POWER = 0.3f;
     }
 
     public class Shooter {
