@@ -26,6 +26,10 @@ public class Shooter extends Subsystem {
         this.state = state;
     }
 
+    public ShooterControlState getState() {
+        return state;
+    }
+
     @Override
     public void stop() {
         flywheelMotor.setPower(0);
