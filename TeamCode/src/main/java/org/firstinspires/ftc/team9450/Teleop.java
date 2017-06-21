@@ -44,6 +44,8 @@ public class Teleop extends OpMode {
 
         subsystemManager.add(drivetrain);
         subsystemManager.add(intake);
+        subsystemManager.add(shooter);
+        subsystemManager.add(slider);
     }
 
     @Override
