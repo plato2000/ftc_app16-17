@@ -18,6 +18,7 @@ public class Slider extends Subsystem {
 
     public Slider(Servo sliderMotor) {
         this.sliderMotor = sliderMotor;
+        this.controlState = SliderControlState.GO_CENTER;
     }
 
     public void setState(SliderControlState controlState) {

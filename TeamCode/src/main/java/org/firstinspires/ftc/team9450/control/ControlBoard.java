@@ -22,6 +22,10 @@ public class ControlBoard {
         return driverController.dpad_right;
     }
 
+    public boolean moveSliderCenter() {
+        return driverController.dpad_down;
+    }
+
     public Intake.IntakeControlState intakeControl() {
         if(driverController.right_trigger > 0.5) {
             return Intake.IntakeControlState.ON;

@@ -81,6 +81,8 @@ public class Teleop extends OpMode {
             slider.setState(Slider.SliderControlState.GO_LEFT);
         } else if(controlBoard.moveSliderRight()) {
             slider.setState(Slider.SliderControlState.GO_RIGHT);
+        } else if(controlBoard.moveSliderCenter()) {
+            slider.setState(Slider.SliderControlState.GO_CENTER);
         }
 
         subsystemManager.loopSystems();
