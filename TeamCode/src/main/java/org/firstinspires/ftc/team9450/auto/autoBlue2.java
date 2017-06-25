@@ -387,6 +387,8 @@ public class autoBlue2 extends LinearVisionOpMode{
 
             motorFlywheel.setPower(0);
             motorLifter.setPower(0);
+            motorLeft.setPower(0);
+            motorRight.setPower(0);
         } catch(InterruptedException e){
             return;
         }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.team9450;
+package org.firstinspires.ftc.team9450.auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,8 +10,8 @@ import org.lasarobotics.vision.opmode.LinearVisionOpMode;
  * Created by Winston on 11/23/16.
  */
 
-@Autonomous(name = "ShootTest1", group = "ShootTest1")
-public class shootTest1 extends LinearVisionOpMode{
+@Autonomous(name = "AutoShooting3", group = "AutoShooting3")
+public class autoShooting3 extends LinearVisionOpMode{
 
 
     float PERCENT_POWER = 0.20f;
@@ -24,7 +24,7 @@ public class shootTest1 extends LinearVisionOpMode{
     DcMotor motorFlywheel;
     DcMotor motorLifter;
 
-    float shootPowLevel=0.30f;
+    float shootPowLevel=-.6f;
     float shootPow=0;
     float intakePow=0;
 
@@ -43,7 +43,7 @@ public class shootTest1 extends LinearVisionOpMode{
     DcMotor motorRight;
     DcMotor motorLeft;
 
-
+    long timer;
     final static int samples = 100;
 
     final static int threshLR = (int)(samples*.2);
@@ -57,6 +57,17 @@ public class shootTest1 extends LinearVisionOpMode{
 
     Servo slider;
 
+    public boolean sleeping(long a) throws InterruptedException {
+        long t = System.currentTimeMillis();
+        while (System.currentTimeMillis() - t < a) {
+            if (System.currentTimeMillis() - timer > 29800){
+                return false;
+            }
+            Thread.sleep(1);
+        }
+        return true;
+    }
+
     public void runOpMode() throws InterruptedException {
         System.out.println("Into opmode");
         motorRight = hardwareMap.dcMotor.get("right");
@@ -64,33 +75,47 @@ public class shootTest1 extends LinearVisionOpMode{
         motorLeft.setDirection(DcMotor.Direction.REVERSE);
         motorFlywheel = hardwareMap.dcMotor.get("flywheel");
         motorLifter = hardwareMap.dcMotor.get("lifter");
+        motorFlywheel.setDirection(DcMotor.Direction.REVERSE);
         waitForStart();
+
         System.out.println("Past start");
         long timer = System.currentTimeMillis();
-     /*   motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorFlywheel.setPower(0);
+        motorLifter.setPower(0);
+        if(!sleeping(10000)){
+            return;
+        };
+        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
         motorRight.setPower(PERCENT_MAX_POWER * speedStart);
-        while(System.currentTimeMillis() < timer + 500){
+        if(!sleeping(1000)){
             return;
         };
         motorLeft.setPower(0);
-        motorRight.setPower(0); */
+        motorRight.setPower(0);
 
-        while (System.currentTimeMillis() < timer + 5000) {
-            motorFlywheel.setPower(shootPowLevel);
+        motorFlywheel.setPower(shootPowLevel);
+        if(!sleeping(5000)){
+            return;
         }
 
         motorLifter.setPower(INTAKE_POWER);
         timer = System.currentTimeMillis();
 
-        while (System.currentTimeMillis() < timer + 3000) {
-            System.out.println("Into Loop");
-            Thread.sleep(1);
+        if(!sleeping(10000)){
+            return;
+        };
 
-
-        }
         motorLifter.setPower(0);
         motorFlywheel.setPower(0);
 
+
+        motorLeft.setPower(PERCENT_MAX_POWER * speedStart * LEFT_FIX);
+        motorRight.setPower(PERCENT_MAX_POWER * speedStart);
+        if(!sleeping(2000)){
+            return;
+        };
+        motorLeft.setPower(0);
+        motorRight.setPower(0);
 
     }
 
